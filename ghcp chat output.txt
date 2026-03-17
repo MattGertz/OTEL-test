@@ -1,0 +1,188 @@
+2026-03-17 09:31:38.618 [info] [GitExtensionServiceImpl] Initializing Git extension service.
+2026-03-17 09:31:38.704 [info] ConversationFeature: Waiting for copilot token to activate conversation feature
+2026-03-17 09:31:38.705 [info] [OTel] Instrumentation enabled — exporter=otlp-grpc endpoint=http://localhost:4317/ captureContent=false
+2026-03-17 09:31:39.103 [info] [GitExtensionServiceImpl] Successfully activated the vscode.git extension.
+2026-03-17 09:31:39.103 [info] [GitExtensionServiceImpl] Enablement state of the vscode.git extension: true.
+2026-03-17 09:31:39.103 [info] [GitExtensionServiceImpl] Successfully registered Git commit message provider.
+2026-03-17 09:31:39.640 [info] [CopilotCLI] MCP server started. Lock file: C:\Users\mattge\.copilot\ide\0e75c67e-56f5-4e53-951c-acd909070dab.lock
+2026-03-17 09:31:39.640 [info] [CopilotCLI] Server URI: pipe:%5C%5C.%5Cpipe%5Cmcp-d4ea0903-6fab-4c84-b694-616425b15c20.sock#%2Fmcp
+2026-03-17 09:31:39.694 [info] Logged in as MattGertz
+2026-03-17 09:31:39.702 [info] Using the Electron fetcher.
+2026-03-17 09:31:39.845 [error] PermissiveAuthRequiredError: Permissive authentication is required
+	at s3.getCopilotAgentModels (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1663:10641)
+	at async Promise.allSettled (index 1)
+	at async p0.provideChatSessionProviderOptions (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:2493:11729)
+	at async Sd.$provideChatSessionProviderOptions (file:///c:/Users/mattge/AppData/Local/Programs/Microsoft%20VS%20Code%20Insiders/f25b8fcfff/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:521:67924)
+2026-03-17 09:31:40.423 [error] [GitHubAPI] GET https://api.github.com/teams/1682102/memberships/MattGertz - Status: 404
+2026-03-17 09:31:40.425 [info] Got Copilot token for MattGertz
+2026-03-17 09:31:40.425 [info] Copilot Chat: 0.40.2026031702, VS Code: 1.112.0-insider
+2026-03-17 09:31:40.438 [info] [context keys] Setting context key: github.copilot-chat.activated
+2026-03-17 09:31:40.441 [info] activationBlocker from 'languageModelAccess' took for 1784ms
+2026-03-17 09:31:40.464 [error] PermissiveAuthRequiredError: Permissive authentication is required
+	at s3.getCopilotAgentModels (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1663:10641)
+	at async Promise.allSettled (index 1)
+	at async p0.provideChatSessionProviderOptions (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:2493:11729)
+	at async Sd.$provideChatSessionProviderOptions (file:///c:/Users/mattge/AppData/Local/Programs/Microsoft%20VS%20Code%20Insiders/f25b8fcfff/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:521:67924)
+2026-03-17 09:31:40.537 [info] AuthenticationService: firing onDidAuthenticationChange from handleAuthChangeEvent. Has token: true
+2026-03-17 09:31:40.537 [info] copilot token sku: copilot_enterprise_seat_multi_quota
+2026-03-17 09:31:40.537 [info] ConversationFeature: Activating contributions
+2026-03-17 09:31:40.537 [info] GitHub.vscode-pull-request-github extension is not yet activated.
+2026-03-17 09:31:40.552 [info] Registering default platform agent...
+2026-03-17 09:31:40.553 [info] ConversationFeature: onDidAuthenticationChange has token: true
+2026-03-17 09:31:40.554 [info] [code-referencing] Public code references are enabled.
+2026-03-17 09:31:40.555 [info] activationBlocker from 'conversationFeature' took for 1910ms
+2026-03-17 09:31:40.565 [info] GithubAvailableEmbeddingTypesManager: Got embeddings. Primary: metis-1024-I16-Binary. Deprecated: 
+2026-03-17 09:31:40.570 [info] WorkspaceChunkSearchService: using embedding type metis-1024-I16-Binary
+2026-03-17 09:31:40.576 [error] Failed to create database. Falling back to in-memory db: Error: unable to open database file
+2026-03-17 09:31:40.610 [info] BYOK: Copilot Chat known models list fetched successfully.
+2026-03-17 09:31:40.766 [info] Fetched model metadata in 2088ms 1cd0fb21-4dca-491c-ab4c-c526abad7cf0
+2026-03-17 09:31:40.800 [info] Latest entry: ccreq:latest.copilotmd
+2026-03-17 09:31:40.801 [info] ccreq:402a8d0e.copilotmd | markdown
+2026-03-17 09:31:41.023 [error] Error: No authentication token available
+	at s3.getOrgCustomInstructions (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1663:9372)
+	at async OK.pollInstructions (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1369:1179)
+	at async c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1364:22332
+2026-03-17 09:31:41.023 [error] [GitHubOrgCustomAgentProvider] Error polling for agents: PermissiveAuthRequiredError: Permissive authentication is required
+2026-03-17 09:31:41.362 [info] Fetched content exclusion rules in 371ms
+2026-03-17 09:31:41.362 [info] ccreq:198c0fc5.copilotmd | markdown
+2026-03-17 09:33:32.891 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:33:32.895 [info] request done: requestId: [a4efce46-6627-4556-b7b3-7c8a07aa18a2] model deployment ID: []
+2026-03-17 09:33:32.897 [info] ccreq:ed66ac1a.copilotmd | success | gpt-4o-mini-2024-07-18 | 534ms | [title]
+2026-03-17 09:33:33.279 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:33:33.281 [info] request done: requestId: [b8af3f21-6926-468a-b7da-506b240e2106] model deployment ID: []
+2026-03-17 09:33:33.283 [info] ccreq:429085a9.copilotmd | success | gpt-4o-mini-2024-07-18 | 900ms | [progressMessages]
+2026-03-17 09:33:33.338 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:33:33.340 [info] request done: requestId: [8622fb42-7a2a-4c09-ab76-b9e295b3638b] model deployment ID: []
+2026-03-17 09:33:33.342 [info] ccreq:6854a88f.copilotmd | success | gpt-4o-mini-2024-07-18 | 859ms | [promptCategorization]
+2026-03-17 09:33:34.108 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:33:34.111 [info] request done: requestId: [39c969a0-2fcb-4d7c-aab9-640f0239aee3] model deployment ID: []
+2026-03-17 09:33:34.113 [info] ccreq:ca0dcb9b.copilotmd | success | gpt-4o-mini-2024-07-18 | 1726ms | [progressMessages]
+2026-03-17 09:33:46.953 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:33:46.957 [info] request done: requestId: [86e14c62-e878-46a6-8f42-429551942190] model deployment ID: []
+2026-03-17 09:33:46.959 [info] ccreq:a9bf7ca1.copilotmd | success | gpt-4o-mini -> gpt-4o-mini-2024-07-18 | 490ms | [copilotLanguageModelWrapper]
+2026-03-17 09:33:51.273 [error] [GitServiceImpl][getRepositoryFetchUrls] Failed to read remotes from .git/config: Unable to resolve filesystem provider with relative file path 'output:GitHub.copilot-chat.GitHub Copilot Chat.log'
+2026-03-17 09:33:51.284 [error] [GitServiceImpl][getRepositoryFetchUrls] Failed to read remotes from .git/config: Unable to resolve filesystem provider with relative file path 'output:GitHub.copilot-chat.GitHub Copilot Chat.log'
+2026-03-17 09:33:53.226 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:33:53.231 [info] ccreq:ea9e45ce.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 20644ms | [panel/editAgent]
+2026-03-17 09:33:53.243 [info] [ToolCallingLoop] Stop hook result: shouldContinue=false, reasons=undefined
+2026-03-17 09:34:56.229 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:34:56.234 [info] request done: requestId: [05069ab1-5c56-4bd4-9891-fd2e2062dba4] model deployment ID: []
+2026-03-17 09:34:56.235 [info] ccreq:770a9b57.copilotmd | success | gpt-4o-mini -> gpt-4o-mini-2024-07-18 | 524ms | [copilotLanguageModelWrapper]
+2026-03-17 09:34:58.237 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:34:58.243 [info] ccreq:722cff7d.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 6507ms | [panel/editAgent]
+2026-03-17 09:35:02.560 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:02.564 [info] ccreq:cb884851.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 4253ms | [panel/editAgent]
+2026-03-17 09:35:03.375 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:03.377 [info] request done: requestId: [4d65e8bf-664a-42a5-b66c-65321f7013f6] model deployment ID: []
+2026-03-17 09:35:03.379 [info] ccreq:e9c708ba.copilotmd | success | gpt-4o-mini -> gpt-4o-mini-2024-07-18 | 632ms | [copilotLanguageModelWrapper]
+2026-03-17 09:35:08.811 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:08.815 [info] request done: requestId: [78cf10b2-9e14-43c3-85d5-2c7071ddd6fd] model deployment ID: []
+2026-03-17 09:35:08.816 [info] ccreq:a307a8be.copilotmd | success | gpt-4.1 -> gpt-4.1-2025-04-14 | 1898ms | [debugCommandIdentifier]
+2026-03-17 09:35:10.445 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:10.453 [info] ccreq:af9fd363.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 3485ms | [panel/editAgent]
+2026-03-17 09:35:14.797 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:14.804 [info] ccreq:fdb1e551.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 4286ms | [panel/editAgent]
+2026-03-17 09:35:18.399 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:18.405 [info] ccreq:da3f3e88.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 3397ms | [panel/editAgent]
+2026-03-17 09:35:22.280 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:22.284 [info] ccreq:223b7f2e.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 3683ms | [panel/editAgent]
+2026-03-17 09:35:27.289 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:27.292 [info] ccreq:8007a9b2.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 4817ms | [panel/editAgent]
+2026-03-17 09:35:27.916 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:27.918 [info] request done: requestId: [df588ebf-ce14-497c-89c9-d45673c2e9d7] model deployment ID: []
+2026-03-17 09:35:27.919 [info] ccreq:7fd597e2.copilotmd | success | gpt-4o-mini -> gpt-4o-mini-2024-07-18 | 546ms | [copilotLanguageModelWrapper]
+2026-03-17 09:35:36.156 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:36.161 [info] ccreq:659ba188.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 5669ms | [panel/editAgent]
+2026-03-17 09:35:42.467 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:42.474 [info] ccreq:ed0328c2.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 3982ms | [panel/editAgent]
+2026-03-17 09:35:45.774 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:45.780 [info] ccreq:ebd5f701.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 3256ms | [panel/editAgent]
+2026-03-17 09:35:49.140 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:49.142 [info] request done: requestId: [f4e7309e-1f49-4c0c-b31c-364b492867e9] model deployment ID: []
+2026-03-17 09:35:49.144 [info] ccreq:c56369f7.copilotmd | success | gpt-4o-mini -> gpt-4o-mini-2024-07-18 | 814ms | [copilotLanguageModelWrapper]
+2026-03-17 09:35:56.748 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:35:56.752 [info] ccreq:e180a371.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 10927ms | [panel/editAgent]
+2026-03-17 09:35:56.760 [info] [ToolCallingLoop] Stop hook result: shouldContinue=false, reasons=undefined
+2026-03-17 09:38:22.969 [info] ccreq:d9dfe468.copilotmd | markdown
+2026-03-17 09:38:26.053 [info] ccreq:6af2625d.copilotmd | markdown
+2026-03-17 09:38:26.225 [info] ccreq:c386f10b.copilotmd | markdown
+2026-03-17 09:38:32.264 [info] ccreq:2d0b3ccc.copilotmd | markdown
+2026-03-17 09:38:36.691 [info] ccreq:2bd4aef1.copilotmd | markdown
+2026-03-17 09:38:38.160 [info] ccreq:ad0560a0.copilotmd | markdown
+2026-03-17 09:39:04.986 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:39:04.990 [info] request done: requestId: [07c94c49-7db1-47cf-9cbe-57fd6adcf7c0] model deployment ID: []
+2026-03-17 09:39:04.991 [info] ccreq:ca0d988b.copilotmd | success | gpt-4o-mini -> gpt-4o-mini-2024-07-18 | 446ms | [copilotLanguageModelWrapper]
+2026-03-17 09:39:06.591 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:39:06.596 [info] ccreq:ea396041.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 5614ms | [panel/editAgent]
+2026-03-17 09:39:55.419 [info] message 0 returned. finish reason: [stop]
+2026-03-17 09:39:55.422 [info] request done: requestId: [290ac329-5d75-4990-b5e8-7009dfba7a40] model deployment ID: []
+2026-03-17 09:39:55.424 [info] ccreq:efddd4c1.copilotmd | success | gpt-4o-mini -> gpt-4o-mini-2024-07-18 | 390ms | [copilotLanguageModelWrapper]
+2026-03-17 09:39:56.516 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:39:56.521 [info] ccreq:628adaf9.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 5041ms | [panel/editAgent]
+2026-03-17 09:40:06.046 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-03-17 09:40:06.049 [info] ccreq:c15769d8.copilotmd | success | claude-opus-4.6 -> claude-opus-4-6 | 6325ms | [panel/editAgent]
+2026-03-17 09:40:06.057 [info] [ToolCallingLoop] Stop hook result: shouldContinue=false, reasons=undefined
+2026-03-17 09:40:11.324 [error] [GitServiceImpl][getRepositoryFetchUrls] Failed to read remotes from .git/config: ENOPRO: No file system provider found for resource 'vscode-chat-code-block://dnnjb2rllwnoyxqtc2vzc2lvbjovl2xvy2fsl1pqbgporeztwmpjdfpqzzbnetawwkdoauxubgtomlf0tw1kak5qvtnnaleyttjnea/response_9e375c7d-637c-4e90-a08b-b8e787e18d2a/0#%7B%22references%22%3A%5B%7B%22uri%22%3A%7B%22%24mid%22%3A1%2C%22fsPath%22%3A%22c%3A%5C%5CUsers%5C%5Cmattge%5C%5Csource%5C%5Crepos%5C%5Cscratch%5C%5C.github%5C%5Ccopilot-instructions.md%22%2C%22_sep%22%3A1%2C%22external%22%3A%22file%3A%2F%2F%2Fc%253A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22path%22%3A%22%2Fc%3A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22scheme%22%3A%22file%22%7D%7D%5D%7D'
+2026-03-17 09:40:11.325 [error] [GitServiceImpl][getRepositoryFetchUrls] Failed to read remotes from .git/config: ENOPRO: No file system provider found for resource 'vscode-chat-code-block://dnnjb2rllwnoyxqtc2vzc2lvbjovl2xvy2fsl1pqbgporeztwmpjdfpqzzbnetawwkdoauxubgtomlf0tw1kak5qvtnnaleyttjnea/response_9e375c7d-637c-4e90-a08b-b8e787e18d2a/1#%7B%22references%22%3A%5B%7B%22uri%22%3A%7B%22%24mid%22%3A1%2C%22fsPath%22%3A%22c%3A%5C%5CUsers%5C%5Cmattge%5C%5Csource%5C%5Crepos%5C%5Cscratch%5C%5C.github%5C%5Ccopilot-instructions.md%22%2C%22_sep%22%3A1%2C%22external%22%3A%22file%3A%2F%2F%2Fc%253A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22path%22%3A%22%2Fc%3A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22scheme%22%3A%22file%22%7D%7D%5D%7D'
+2026-03-17 09:40:11.326 [error] [GitServiceImpl][getRepositoryFetchUrls] Failed to read remotes from .git/config: ENOPRO: No file system provider found for resource 'vscode-chat-code-block://dnnjb2rllwnoyxqtc2vzc2lvbjovl2xvy2fsl1pqbgporeztwmpjdfpqzzbnetawwkdoauxubgtomlf0tw1kak5qvtnnaleyttjnea/response_9e375c7d-637c-4e90-a08b-b8e787e18d2a/2#%7B%22references%22%3A%5B%7B%22uri%22%3A%7B%22%24mid%22%3A1%2C%22fsPath%22%3A%22c%3A%5C%5CUsers%5C%5Cmattge%5C%5Csource%5C%5Crepos%5C%5Cscratch%5C%5C.github%5C%5Ccopilot-instructions.md%22%2C%22_sep%22%3A1%2C%22external%22%3A%22file%3A%2F%2F%2Fc%253A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22path%22%3A%22%2Fc%3A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22scheme%22%3A%22file%22%7D%7D%5D%7D'
+2026-03-17 09:40:11.329 [error] [GitServiceImpl][getRepositoryFetchUrls] Failed to read remotes from .git/config: ENOPRO: No file system provider found for resource 'vscode-chat-code-block://dnnjb2rllwnoyxqtc2vzc2lvbjovl2xvy2fsl1pqbgporeztwmpjdfpqzzbnetawwkdoauxubgtomlf0tw1kak5qvtnnaleyttjnea/response_09a9fd5b-af81-4b67-bd18-19373f7fa544/0#%7B%22references%22%3A%5B%7B%22uri%22%3A%7B%22%24mid%22%3A1%2C%22fsPath%22%3A%22c%3A%5C%5CUsers%5C%5Cmattge%5C%5Csource%5C%5Crepos%5C%5Cscratch%5C%5C.github%5C%5Ccopilot-instructions.md%22%2C%22_sep%22%3A1%2C%22external%22%3A%22file%3A%2F%2F%2Fc%253A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22path%22%3A%22%2Fc%3A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22scheme%22%3A%22file%22%7D%7D%5D%7D'
+2026-03-17 09:40:11.331 [error] [GitServiceImpl][getRepositoryFetchUrls] Failed to read remotes from .git/config: ENOPRO: No file system provider found for resource 'ccsettings://root/schema.json'
+2026-03-17 09:40:11.333 [error] [GitServiceImpl][getRepositoryFetchUrls] Failed to read remotes from .git/config: ENOPRO: No file system provider found for resource 'vscode-chat-code-block://dnnjb2rllwnoyxqtc2vzc2lvbjovl2xvy2fsl1pqbgporeztwmpjdfpqzzbnetawwkdoauxubgtomlf0tw1kak5qvtnnaleyttjnea/response_e0491b09-a0ab-48a5-9f0c-0fb21771a6e8/0#%7B%22references%22%3A%5B%7B%22uri%22%3A%7B%22%24mid%22%3A1%2C%22fsPath%22%3A%22c%3A%5C%5CUsers%5C%5Cmattge%5C%5Csource%5C%5Crepos%5C%5Cscratch%5C%5C.github%5C%5Ccopilot-instructions.md%22%2C%22_sep%22%3A1%2C%22external%22%3A%22file%3A%2F%2F%2Fc%253A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22path%22%3A%22%2Fc%3A%2FUsers%2Fmattge%2Fsource%2Frepos%2Fscratch%2F.github%2Fcopilot-instructions.md%22%2C%22scheme%22%3A%22file%22%7D%7D%5D%7D'
+2026-03-17 09:40:11.594 [info] [fetchCompletions] Request 21a6e0c6-ea06-4f82-ad91-c89ec292c0d1 at <https://proxy.enterprise.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 237.6374000000069ms
+2026-03-17 09:40:11.686 [info] ccreq:5d0a673f.copilotmd | markdown
+2026-03-17 09:40:11.688 [info] ccreq:8ed2c6e0.copilotmd | markdown
+2026-03-17 09:40:11.870 [info] [fetchCompletions] Request d849409c-8cde-48c6-bc68-f191d24b8f2b at <https://proxy.enterprise.githubcopilot.com/v1/engines/gpt-41-copilot/completions> finished with 200 status after 162.80879999999888ms
+2026-03-17 09:40:11.931 [info] ccreq:241cac1b.copilotmd | markdown
+2026-03-17 09:40:12.388 [info] ccreq:4290cff9.copilotmd | markdown
+2026-03-17 09:40:12.431 [info] ccreq:95a0d5b6.copilotmd | markdown
+2026-03-17 09:40:12.677 [info] ccreq:ab120984.copilotmd | markdown
+2026-03-17 09:40:13.761 [info] ccreq:b39833e4.copilotmd | markdown
+2026-03-17 09:40:14.761 [info] ccreq:3087a079.copilotmd | markdown
+2026-03-17 09:40:18.044 [info] ccreq:b916d91c.copilotmd | markdown
+2026-03-17 09:40:38.992 [info] [GitExtensionServiceImpl] Initializing Git extension service.
+2026-03-17 09:40:39.168 [info] ConversationFeature: Waiting for copilot token to activate conversation feature
+2026-03-17 09:40:39.170 [info] [OTel] Instrumentation enabled — exporter=otlp-grpc endpoint=http://localhost:4317/ captureContent=false
+2026-03-17 09:40:39.241 [info] Using the Electron fetcher.
+2026-03-17 09:40:39.266 [info] [GitExtensionServiceImpl] Successfully activated the vscode.git extension.
+2026-03-17 09:40:39.266 [info] [GitExtensionServiceImpl] Enablement state of the vscode.git extension: true.
+2026-03-17 09:40:39.266 [info] [GitExtensionServiceImpl] Successfully registered Git commit message provider.
+2026-03-17 09:40:40.260 [info] [CopilotCLI] MCP server started. Lock file: C:\Users\mattge\.copilot\ide\ba5177ab-58b3-4fa1-b232-ee8ca6b04315.lock
+2026-03-17 09:40:40.260 [info] [CopilotCLI] Server URI: pipe:%5C%5C.%5Cpipe%5Cmcp-5d4eb8f3-3a5f-4be7-b38d-06ed2fa0794a.sock#%2Fmcp
+2026-03-17 09:40:40.271 [info] Logged in as MattGertz
+2026-03-17 09:40:40.596 [error] PermissiveAuthRequiredError: Permissive authentication is required
+	at s3.getCopilotAgentModels (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1663:10641)
+	at async Promise.allSettled (index 1)
+	at async p0.provideChatSessionProviderOptions (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:2493:11729)
+	at async Sd.$provideChatSessionProviderOptions (file:///c:/Users/mattge/AppData/Local/Programs/Microsoft%20VS%20Code%20Insiders/f25b8fcfff/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:521:67924)
+2026-03-17 09:40:41.023 [error] [GitHubAPI] GET https://api.github.com/teams/1682102/memberships/MattGertz - Status: 404
+2026-03-17 09:40:41.025 [info] Got Copilot token for MattGertz
+2026-03-17 09:40:41.025 [info] Copilot Chat: 0.40.2026031702, VS Code: 1.112.0-insider
+2026-03-17 09:40:41.040 [info] [context keys] Setting context key: github.copilot-chat.activated
+2026-03-17 09:40:41.043 [info] activationBlocker from 'languageModelAccess' took for 1930ms
+2026-03-17 09:40:41.071 [error] PermissiveAuthRequiredError: Permissive authentication is required
+	at s3.getCopilotAgentModels (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1663:10641)
+	at async Promise.allSettled (index 1)
+	at async p0.provideChatSessionProviderOptions (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:2493:11729)
+	at async Sd.$provideChatSessionProviderOptions (file:///c:/Users/mattge/AppData/Local/Programs/Microsoft%20VS%20Code%20Insiders/f25b8fcfff/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:521:67924)
+2026-03-17 09:40:41.133 [info] AuthenticationService: firing onDidAuthenticationChange from handleAuthChangeEvent. Has token: true
+2026-03-17 09:40:41.133 [info] copilot token sku: copilot_enterprise_seat_multi_quota
+2026-03-17 09:40:41.133 [info] ConversationFeature: Activating contributions
+2026-03-17 09:40:41.133 [info] GitHub.vscode-pull-request-github extension is not yet activated.
+2026-03-17 09:40:41.148 [info] Registering default platform agent...
+2026-03-17 09:40:41.149 [info] ConversationFeature: onDidAuthenticationChange has token: true
+2026-03-17 09:40:41.150 [info] [code-referencing] Public code references are enabled.
+2026-03-17 09:40:41.154 [info] activationBlocker from 'conversationFeature' took for 2052ms
+2026-03-17 09:40:41.165 [info] GithubAvailableEmbeddingTypesManager: Got embeddings. Primary: metis-1024-I16-Binary. Deprecated: 
+2026-03-17 09:40:41.168 [info] WorkspaceChunkSearchService: using embedding type metis-1024-I16-Binary
+2026-03-17 09:40:41.174 [error] Failed to create database. Falling back to in-memory db: Error: unable to open database file
+2026-03-17 09:40:41.184 [info] Fetched model metadata in 2046ms 8ea8ef0a-26c9-4015-8225-ebcd713bfd8f
+2026-03-17 09:40:41.200 [info] BYOK: Copilot Chat known models list fetched successfully.
+2026-03-17 09:40:41.207 [info] Latest entry: ccreq:latest.copilotmd
+2026-03-17 09:40:41.208 [info] ccreq:46afe11f.copilotmd | markdown
+2026-03-17 09:40:41.791 [info] Fetched content exclusion rules in 388ms
+2026-03-17 09:40:41.791 [info] ccreq:87ccffd8.copilotmd | markdown
+2026-03-17 09:40:41.854 [error] Error: No authentication token available
+	at s3.getOrgCustomInstructions (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1663:9372)
+	at async OK.pollInstructions (c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1369:1179)
+	at async c:\Users\mattge\.vscode-insiders\extensions\github.copilot-chat-0.40.2026031702\dist\extension.js:1364:22332
+2026-03-17 09:40:41.854 [error] [GitHubOrgCustomAgentProvider] Error polling for agents: PermissiveAuthRequiredError: Permissive authentication is required

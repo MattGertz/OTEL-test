@@ -1,0 +1,3 @@
+- This is a Python project.
+- Run with `py main.py`.
+- Entry point is `main.py`.
