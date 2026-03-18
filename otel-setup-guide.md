@@ -78,7 +78,23 @@ Open that full URL in your browser, or:
 2. Open the Settings JSON file:
    - Press `Ctrl+Shift+P` to open the Command Palette.
    - Type **"Preferences: Open User Settings (JSON)"** and select it.
-3. Add these settings inside the `{}` braces (if the file already has content, add them after the last existing setting, separated by commas):
+3. Add these settings inside the `{}` braces (if the file already has content, add them after the last existing setting, separated by commas).
+
+### Option A: File Export (Recommended for Analysis)
+
+Writes traces as JSON-lines to a local file. Best for programmatic analysis with the included Python scripts.
+
+   ```json
+   "github.copilot.chat.otel.enabled": true,
+   "github.copilot.chat.otel.outfile": "C:/Users/mattge/source/repos/scratch/otel-traces.jsonl",
+   "github.copilot.chat.otel.captureContent": true
+   ```
+
+> **Warning:** `captureContent` includes your prompts and Copilot's responses in the telemetry. This may contain sensitive data. Only enable for local testing.
+
+### Option B: Aspire Dashboard (Visual Inspection)
+
+Sends traces to the Aspire Dashboard for a visual trace viewer UI. Requires Docker (Steps 2-3).
 
    ```json
    "github.copilot.chat.otel.enabled": true,
@@ -86,14 +102,17 @@ Open that full URL in your browser, or:
    "github.copilot.chat.otel.exporterType": "otlp-grpc"
    ```
 
-   **What each setting does:**
+> **Note:** Setting `outfile` overrides `exporterType` — you cannot use both simultaneously. To switch modes, change the settings and reload.
+
+### All Available Settings
+
    | Setting | Value | Purpose |
    |---|---|---|
    | `github.copilot.chat.otel.enabled` | `true` | Turns on OTel trace/metric/log emission |
-   | `github.copilot.chat.otel.otlpEndpoint` | `http://localhost:4317` | Where to send telemetry (the Aspire Dashboard's OTLP receiver) |
-   | `github.copilot.chat.otel.exporterType` | `otlp-grpc` | Protocol to use (must match the Aspire Dashboard's gRPC endpoint) |
-
-   **Other available values for `exporterType`:** `otlp-http`, `console`, `file`
+   | `github.copilot.chat.otel.outfile` | file path | Write traces as JSON-lines to this file (overrides exporterType to `file`) |
+   | `github.copilot.chat.otel.otlpEndpoint` | URL | OTLP collector endpoint (for dashboard mode) |
+   | `github.copilot.chat.otel.exporterType` | `otlp-grpc`, `otlp-http`, `console`, `file` | Exporter protocol (default: `otlp-http`) |
+   | `github.copilot.chat.otel.captureContent` | `true`/`false` | Include prompt/response content in spans |
 
 4. Save the file (`Ctrl+S`).
 5. Reload VS Code Insiders:
@@ -144,29 +163,36 @@ Open that full URL in your browser, or:
 
 ---
 
-## Optional: Enable Content Capture
+## Understanding the Trace Output
 
-By default, message content is **not** included in traces (for privacy). To enable it:
+### Trace Structure Per User Prompt
 
-1. Add this setting to your `settings.json`:
+Every chat prompt generates **~4 traces**, not just one:
 
-   ```json
-   "github.copilot.chat.otel.captureContent": true
-   ```
+| Trace | Description | Relevant? |
+|---|---|---|
+| `invoke_agent GitHub Copilot Chat` | **Your actual request** — the agent loop with tool calls and LLM reasoning | **Yes** |
+| `chat gpt-4o-mini` (title) | Auto-generates a title for the chat tab | No — sidecar |
+| `chat gpt-4o-mini` (categorization) | Classifies your prompt intent for internal routing | No — sidecar |
+| `chat gpt-4o-mini` (summary) | Summarizes the result for chat history | No — sidecar |
 
-2. Reload VS Code Insiders (`Ctrl+Shift+P` → **Developer: Reload Window**).
-3. Send a chat message and check the trace in the Aspire Dashboard.
-4. You should now see additional attributes like `gen_ai.content.prompt` and `gen_ai.content.completion` on spans.
+You can identify sidecars by the `copilot_chat.debug_log_label` or `gen_ai.agent.name` attribute (values: `title`, `promptCategorization`, `copilotLanguageModelWrapper`).
 
-> **Warning:** Content capture includes your prompts and Copilot's responses in the telemetry. This may contain sensitive data. Only enable for local testing.
+### Automatic Tool Calls
 
----
+Every `invoke_agent` trace starts with a `manage_todo_list` tool call (checking for existing task lists). This is automatic — not user-driven. The analysis script (`analyze_sessions.py`) filters these out.
 
-## Optional: Check Metrics and Events
+### Key Span Attributes
 
-In the Aspire Dashboard:
-- **Metrics tab** — Look for metrics like `gen_ai.client.operation.duration` and `copilot_chat.tool.call.count`.
-- **Events within traces** — Click into individual spans to see events such as `copilot_chat.session.start` and `copilot_chat.tool.call`.
+| Attribute | Where | What it tells you |
+|---|---|---|
+| `gen_ai.tool.name` | `execute_tool` spans | Which tool was called (e.g., `create_file`, `mcp_azure-mcp_storage`) |
+| `gen_ai.tool.call.result` | `execute_tool` spans | The tool's return value |
+| `gen_ai.request.model` | `chat` spans | Which LLM model handled this turn |
+| `gen_ai.usage.input_tokens` | `chat` spans | Tokens consumed |
+| `copilot_chat.time_to_first_token` | `chat` spans | Responsiveness (ms) |
+| `copilot_chat.canceled` | any span | Whether the user canceled mid-response |
+| `copilot_chat.chat_session_id` | all spans | Groups spans to the same chat session |
 
 ---
 
@@ -193,6 +219,28 @@ To restart it later, just run the `docker run` command from Step 2 again.
 | VS Code build required | Insiders with Copilot Chat v0.40+ |
 | OTel log marker | `[OTel] Instrumentation enabled` in Output panel |
 | Settings prefix | `github.copilot.chat.otel.*` |
+
+---
+
+## Analyzing Traces with Python Scripts
+
+When using file export (Option A), analyze traces with:
+
+```powershell
+py analyze_sessions.py otel-traces.jsonl
+```
+
+The script automatically:
+- **Filters out sidecar traces** (title, categorization, summary)
+- **Excludes automatic tool calls** (`manage_todo_list`) from effectiveness metrics
+- **Groups by session** using `copilot_chat.chat_session_id`
+- **Computes an effectiveness score** (0-100) based on turn count, tool thrashing, cancellation, and token ratios
+
+To view the test plan for structured evaluation:
+
+```powershell
+py test_effectiveness.py
+```
 
 ---
 
