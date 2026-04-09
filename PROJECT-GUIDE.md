@@ -46,19 +46,19 @@ The project was built to evaluate Copilot's agentic behavior — especially how 
 ## Architecture Overview
 
 ```
-┌────────────────────┐     ┌────────────────────┐
+┌────────────────────┐     ┌─────────────────────┐
 │  VS Code Copilot   │     │   Copilot CLI       │
 │  Chat Extension    │     │   (>= v1.0.8)       │
 └────────┬───────────┘     └────────┬────────────┘
          │ OTel spans                │ OTel spans
          ▼                           ▼
-┌─────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────┐
 │            Telemetry Backend (pick one)          │
 │                                                  │
-│  ┌─────────────┐  ┌──────────┐  ┌────────────┐ │
-│  │ File Export  │  │  Aspire  │  │   Watson    │ │
-│  │ (.jsonl)    │  │Dashboard │  │ (OTLP→ATIF)│ │
-│  └──────┬──────┘  └────┬─────┘  └─────┬──────┘ │
+│  ┌─────────────┐  ┌──────────┐  ┌────────────┐   │
+│  │ File Export │  │  Aspire  │  │   Watson   │   │
+│  │ (.jsonl)    │  │Dashboard │  │ (OTLP→ATIF)│   │
+│  └──────┬──────┘  └────┬─────┘  └─────┬──────┘   │
 │         │              │               │         │
 └─────────┼──────────────┼───────────────┼─────────┘
           ▼              ▼               ▼
@@ -70,15 +70,15 @@ The project was built to evaluate Copilot's agentic behavior — especially how 
 
 ## Prerequisites
 
-| Requirement | Purpose | Install |
-|-------------|---------|---------|
-| **Python 3.x** | Analysis scripts | `winget install Python.Python.3.12` |
-| **VS Code Insiders** | OTel feature available in Copilot Chat v0.40+ | [Download](https://code.visualstudio.com/insiders/) |
-| **GitHub Copilot subscription** | Required for Copilot Chat | Sign in with a licensed GitHub account |
-| **Docker Desktop** | Only if using Aspire Dashboard backend | [Download](https://www.docker.com/products/docker-desktop/) |
-| **.NET 10.0 SDK** | Only if using Watson + Graders pipeline | `winget install Microsoft.DotNet.SDK.10` |
-| **Copilot CLI** (>= 1.0.8) | Only if capturing CLI sessions | `npm install -g @github/copilot` |
-| **ai-tools repo** | Only if using Watson + Graders | Clone from `github.com/dotnet-microsoft/ai-tools` (internal) |
+| Requirement                                                 | Purpose                                       | Install                                                      |
+|-------------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------|
+| **Python 3.x**                                              | Analysis scripts                              | `winget install Python.Python.3.12`                          |
+| **VS Code Insiders**                                        | OTel feature available in Copilot Chat v0.40+ | [Download](https://code.visualstudio.com/insiders/)          |
+| **GitHub Copilot subscription**                             | Required for Copilot Chat                     | Sign in with a licensed GitHub account                       |
+| **Docker Desktop**                                          | Only if using Aspire Dashboard backend        | [Download](https://www.docker.com/products/docker-desktop/)  |
+| **.NET 10.0 SDK**                                           | Only if using Watson + Graders pipeline       | `winget install Microsoft.DotNet.SDK.10`                     |
+| **Copilot CLI** (>= 1.0.8)                                  | Only if capturing CLI sessions                | `npm install -g @github/copilot`                             |
+| **ai-tools repo**                                           | Only if using Watson + Graders                | Clone from `github.com/dotnet-microsoft/ai-tools` (internal) |
 
 ---
 
@@ -116,12 +116,16 @@ After saving, reload VS Code: `Ctrl+Shift+P` → "Developer: Reload Window".
 #### All VS Code OTel Settings
 
 | Setting | Values | Notes |
-|---------|--------|-------|
-| `github.copilot.chat.otel.enabled` | `true` / `false` | Master switch |
-| `github.copilot.chat.otel.outfile` | file path | JSON-lines file export; **overrides** `exporterType` to `file` |
-| `github.copilot.chat.otel.otlpEndpoint` | URL | OTLP collector endpoint |
-| `github.copilot.chat.otel.exporterType` | `otlp-grpc`, `otlp-http`, `console`, `file` | Protocol (default: `otlp-http`) |
-| `github.copilot.chat.otel.captureContent` | `true` / `false` | Include prompt/response text in spans |
+|-------------------------------------------|------------------|-------------------------------------------------------------------|
+| `github.copilot.chat.otel.enabled`        | `true` / `false` | Master switch                                                     |
+| `github.copilot.chat.otel.outfile`        | file path        | JSON-lines file export; **overrides** `exporterType` to `file`    |
+| `github.copilot.chat.otel.otlpEndpoint`   | URL              | OTLP collector endpoint                                           |
+| `github.copilot.chat.otel.exporterType`   | `otlp-grpc`,     | Protocol (default: `otlp-http`)                                   |
+|                                           | `otlp-http`,     |                                                                   |
+|                                           | `console`,       |                                                                   |
+|                                           | `file`           |                                                                   |
+|                                           |                  |                                                                   |
+| `github.copilot.chat.otel.captureContent` | `true` / `false` | Include prompt/response text in spans                             |
 
 > **Important:** `outfile` and `otlpEndpoint` are mutually exclusive. Setting `outfile` forces file export mode regardless of `exporterType`. To switch modes, remove one and set the other, then reload.
 
@@ -146,10 +150,10 @@ Check the CLI version first: `copilot version` (must be >= 1.0.8).
 
 #### CLI vs. VS Code Port Difference
 
-| Surface | Protocol | Default Port | Endpoint |
-|---------|----------|:------------:|----------|
-| VS Code | gRPC | 4317 | `http://localhost:4317` |
-| CLI | HTTP/protobuf | 4318 | `http://localhost:4318` |
+| Surface | Protocol      | Default Port | Endpoint                |
+|---------|---------------|--------------|-------------------------|
+| VS Code | gRPC          | 4317         | `http://localhost:4317` |
+| CLI     | HTTP/protobuf | 4318         | `http://localhost:4318` |
 
 The Aspire Dashboard maps both: `-p 4317:18889` for gRPC and listens on 4318 for HTTP. Watson listens on both by default.
 
@@ -311,13 +315,13 @@ The graders produce `grades-summary.md` and `measurements-summary.md`.
 
 ### Switching Between Backends
 
-| From → To | What to Change |
-|-----------|---------------|
-| File → Aspire | Remove `outfile`, add `otlpEndpoint` + `exporterType`. Start Docker. Reload VS Code. |
-| File → Watson | Remove `outfile`, add `otlpEndpoint` + `exporterType`. Start Watson. Reload VS Code. |
-| Aspire → File | Remove `otlpEndpoint` + `exporterType`, add `outfile`. Reload VS Code. Stop Docker if desired. |
-| Aspire → Watson | Just start Watson — it can share the same OTLP port, OR use a different port. |
-| Watson → File | Remove `otlpEndpoint`, add `outfile`. Reload VS Code. Stop Watson if desired. |
+| From → To       | What to Change                                                                                 |
+|-----------------|------------------------------------------------------------------------------------------------|
+| File → Aspire   | Remove `outfile`, add `otlpEndpoint` + `exporterType`. Start Docker. Reload VS Code.           |
+| File → Watson   | Remove `outfile`, add `otlpEndpoint` + `exporterType`. Start Watson. Reload VS Code.           |
+| Aspire → File   | Remove `otlpEndpoint` + `exporterType`, add `outfile`. Reload VS Code. Stop Docker if desired. |
+| Aspire → Watson | Just start Watson — it can share the same OTLP port, OR use a different port.                  |
+| Watson → File   | Remove `otlpEndpoint`, add `outfile`. Reload VS Code. Stop Watson if desired.                  |
 
 > **Remember:** `outfile` overrides `exporterType`. You cannot use file export and an OTLP endpoint simultaneously.
 
@@ -329,33 +333,33 @@ All scripts are in the project root. Run with `py <script> [args]`.
 
 ### Primary Analysis
 
-| Script | Purpose | Usage |
-|--------|---------|-------|
-| `analyze_sessions.py` | **Main analyzer.** Parses OTLP JSON-lines, groups by session, computes effectiveness scores (0–100), token usage, tool thrashing, MCP usage. | `py analyze_sessions.py otel-traces.jsonl` |
-| `grade_session.py` | Reconstructs session timeline from the raw OTel file-export format (LogRecords). Shows events, turns, tool calls, inference details, and errors. | `py grade_session.py` |
-| `gen_report.py` | Generates a detailed markdown report from OTel traces, mapping tool calls to turns and computing per-session breakdowns. | `py gen_report.py` |
+| Script                | Purpose                                                                                                                                          | Usage                                      |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| `analyze_sessions.py` | **Main analyzer.** Parses OTLP JSON-lines, groups by session, computes effectiveness scores (0–100), token usage, tool thrashing, MCP usage.     | `py analyze_sessions.py otel-traces.jsonl` |
+| `grade_session.py`    | Reconstructs session timeline from the raw OTel file-export format (LogRecords). Shows events, turns, tool calls, inference details, and errors. | `py grade_session.py`                      |
+| `gen_report.py`       | Generates a detailed markdown report from OTel traces, mapping tool calls to turns and computing per-session breakdowns.                         | `py gen_report.py`                         |
 
 ### Exploratory / Debugging
 
-| Script | Purpose |
-|--------|---------|
-| `scan_traces.py` | Quick scan of `otel-traces.jsonl` to list sessions and key stats. |
-| `identify_sessions.py` | Targeted check: which session is which, time ranges, models, tools. |
-| `identify_atif.py` | Reads Watson ATIF output files and summarizes session metadata. |
-| `deep_analyze.py` | Enumerate all attribute keys, content attributes, span types, orphan records. |
-| `deep_analyze2.py` | Inspect raw record structures to understand export format differences. |
-| `analyze_test.py` | Full session analysis with content extraction, agent flow reconstruction. |
+| Script                 | Purpose                                                                       |
+|------------------------|-------------------------------------------------------------------------------|
+| `scan_traces.py`       | Quick scan of `otel-traces.jsonl` to list sessions and key stats.             |
+| `identify_sessions.py` | Targeted check: which session is which, time ranges, models, tools.           |
+| `identify_atif.py`     | Reads Watson ATIF output files and summarizes session metadata.               |
+| `deep_analyze.py`      | Enumerate all attribute keys, content attributes, span types, orphan records. |
+| `deep_analyze2.py`     | Inspect raw record structures to understand export format differences.        |
+| `analyze_test.py`      | Full session analysis with content extraction, agent flow reconstruction.     |
 
 ### SQLite Database Scripts
 
 VS Code Insiders also stores traces in a local SQLite database. These scripts query it directly:
 
-| Script | Purpose |
-|--------|---------|
-| `query_spans.py` | Enumerate tables, columns, and sample rows from `agent-traces.db`. |
-| `analyze_spans.py` | Trace hierarchy analysis from the SQLite span database — shows timing, tools, content attributes. |
-| `extract_session.py` | Extract user prompts and full conversation flow from a specific trace. |
-| `show_test_session.py` | Show Watson ATIF session details — user messages, agent flow, tool calls. |
+| Script                 | Purpose                                                                                           |
+|------------------------|---------------------------------------------------------------------------------------------------|
+| `query_spans.py`       | Enumerate tables, columns, and sample rows from `agent-traces.db`.                                |
+| `analyze_spans.py`     | Trace hierarchy analysis from the SQLite span database — shows timing, tools, content attributes. |
+| `extract_session.py`   | Extract user prompts and full conversation flow from a specific trace.                            |
+| `show_test_session.py` | Show Watson ATIF session details — user messages, agent flow, tool calls.                         |
 
 The SQLite database is at:
 ```
@@ -366,13 +370,13 @@ The SQLite database is at:
 
 `analyze_sessions.py` computes a heuristic effectiveness score (0–100):
 
-| Signal | Good | Bad |
-|--------|------|-----|
-| Turn count | 1–3 turns | >5 turns (penalty) |
-| Tool calls per turn | Moderate | >10 per turn (penalty) |
-| Tool repetition | No thrashing | Same tool 3+ times (penalty) |
-| User cancellation | Not canceled | Canceled (–25 points) |
-| Token ratio | Reasonable output/input | Very low output ratio (penalty) |
+| Signal              | Good                    | Bad                             |
+|---------------------|-------------------------|---------------------------------|
+| Turn count          | 1–3 turns               | >5 turns (penalty)              |
+| Tool calls per turn | Moderate                | >10 per turn (penalty)          |
+| Tool repetition     | No thrashing            | Same tool 3+ times (penalty)    |
+| User cancellation   | Not canceled            | Canceled (–25 points)           |
+| Token ratio         | Reasonable output/input | Very low output ratio (penalty) |
 
 ---
 
@@ -382,21 +386,21 @@ The SQLite database is at:
 
 The graders run both **deterministic** (computed from data) and **model-backed** (LLM-evaluated) measurers:
 
-| Measurer | Kind | What It Measures |
-|----------|------|------------------|
-| `atif-trajectory-cache-efficiency` | Deterministic | % of prompt tokens served from cache (threshold: ≥50%) |
-| `atif-trajectory-wasted-edits` | Deterministic | Edits overwritten by later edits (threshold: 0) |
-| `atif-trajectory-input-tokens` | Deterministic | Total prompt tokens consumed |
-| `atif-trajectory-output-tokens` | Deterministic | Total completion tokens produced |
-| `atif-trajectory-cached-tokens` | Deterministic | Total tokens served from cache |
-| `atif-trajectory-step-count` | Deterministic | Total agent steps |
-| `atif-trajectory-tool-call-count` | Deterministic | Total tool call count |
-| `atif-trajectory-total-cost` | Deterministic | Estimated cost (uses flat $6/step placeholder) |
-| `atif-trajectory-read-write-ratio` | Deterministic | Ratio of file reads to writes |
-| `code-duplication` | Model-backed | Detects duplicated code |
-| `comment-quality` | Model-backed | Evaluates inline comment quality |
-| `cyclomatic-complexity` | Deterministic / Model-backed | Function complexity analysis |
-| `async-exception-handling` | Model-backed | Proper async error handling |
+| Measurer                           | Kind                         | What It Measures                                       |
+|------------------------------------|------------------------------|--------------------------------------------------------|
+| `atif-trajectory-cache-efficiency` | Deterministic                | % of prompt tokens served from cache (threshold: ≥50%) |
+| `atif-trajectory-wasted-edits`     | Deterministic                | Edits overwritten by later edits (threshold: 0)        |
+| `atif-trajectory-input-tokens`     | Deterministic                | Total prompt tokens consumed                           |
+| `atif-trajectory-output-tokens`    | Deterministic                | Total completion tokens produced                       |
+| `atif-trajectory-cached-tokens`    | Deterministic                | Total tokens served from cache                         |
+| `atif-trajectory-step-count`       | Deterministic                | Total agent steps                                      |
+| `atif-trajectory-tool-call-count`  | Deterministic                | Total tool call count                                  |
+| `atif-trajectory-total-cost`       | Deterministic                | Estimated cost (uses flat $6/step placeholder)         |
+| `atif-trajectory-read-write-ratio` | Deterministic                | Ratio of file reads to writes                          |
+| `code-duplication`                 | Model-backed                 | Detects duplicated code                                |
+| `comment-quality`                  | Model-backed                 | Evaluates inline comment quality                       |
+| `cyclomatic-complexity`            | Deterministic / Model-backed | Function complexity analysis                           |
+| `async-exception-handling`         | Model-backed                 | Proper async error handling                            |
 
 ### Known Grader Limitations
 
@@ -410,14 +414,14 @@ The graders run both **deterministic** (computed from data) and **model-backed**
 
 The file `test_effectiveness.py` defines structured test prompts organized by category. Run them manually in Copilot Chat, then analyze the resulting traces:
 
-| Category | Test IDs | What It Tests |
-|----------|----------|---------------|
-| Prompt Clarity | CLEAR-1 to CLEAR-3 | Clear vs. vague vs. ambiguous prompts |
-| Tool Effectiveness | TOOL-1 to TOOL-3 | File reads, search patterns, tool thrashing |
-| Azure MCP | MCP-1 to MCP-8 | MCP tool selection, accuracy, error handling, multi-tool orchestration |
-| Session Patterns | SESS-1 to SESS-3 | Single-shot, multi-turn, user cancellation |
-| Token Efficiency | TOKEN-1 to TOKEN-2 | Concise answers, context bloat |
-| Model Usage | MODEL-1 | Model selection per task type |
+| Category           | Test IDs           | What It Tests                                                          |
+|--------------------|--------------------|------------------------------------------------------------------------|
+| Prompt Clarity     | CLEAR-1 to CLEAR-3 | Clear vs. vague vs. ambiguous prompts                                  |
+| Tool Effectiveness | TOOL-1 to TOOL-3   | File reads, search patterns, tool thrashing                            |
+| Azure MCP          | MCP-1 to MCP-8     | MCP tool selection, accuracy, error handling, multi-tool orchestration |
+| Session Patterns   | SESS-1 to SESS-3   | Single-shot, multi-turn, user cancellation                             |
+| Token Efficiency   | TOKEN-1 to TOKEN-2 | Concise answers, context bloat                                         |
+| Model Usage        | MODEL-1            | Model selection per task type                                          |
 
 Print the test plan:
 
@@ -433,31 +437,31 @@ py -c "from test_effectiveness import print_test_plan; print_test_plan()"
 
 Every chat prompt generates **~4 traces**, not just one:
 
-| Trace | Description | Relevant? |
-|-------|-------------|-----------|
-| `invoke_agent GitHub Copilot Chat` | **Your actual request** — the agent loop with tool calls and LLM reasoning | **Yes** |
-| `chat gpt-4o-mini` (title) | Auto-generates a title for the chat tab | No — sidecar |
-| `chat gpt-4o-mini` (categorization) | Classifies prompt intent for routing | No — sidecar |
-| `chat gpt-4o-mini` (summary) | Summarizes the result for chat history | No — sidecar |
+| Trace                               | Description                                                                | Relevant?    |
+|-------------------------------------|----------------------------------------------------------------------------|--------------|
+| `invoke_agent GitHub Copilot Chat`  | **Your actual request** — the agent loop with tool calls and LLM reasoning | **Yes**      |
+| `chat gpt-4o-mini` (title)          | Auto-generates a title for the chat tab                                    | No — sidecar |
+| `chat gpt-4o-mini` (categorization) | Classifies prompt intent for routing                                       | No — sidecar |
+| `chat gpt-4o-mini` (summary)        | Summarizes the result for chat history                                     | No — sidecar |
 
 Identify sidecars by `gen_ai.agent.name` attribute: `title`, `promptCategorization`, `copilotLanguageModelWrapper`.
 
 ### Key Span Attributes
 
-| Attribute | Location | Meaning |
-|-----------|----------|---------|
-| `gen_ai.tool.name` | `execute_tool` spans | Which tool was called |
-| `gen_ai.tool.call.result` | `execute_tool` spans | Tool return value |
-| `gen_ai.request.model` | `chat` spans | LLM model for this turn |
-| `gen_ai.usage.input_tokens` | `chat` spans | Tokens consumed |
-| `gen_ai.usage.output_tokens` | `chat` spans | Tokens produced |
-| `gen_ai.usage.reasoning_tokens` | `chat` spans | Reasoning tokens (thinking models) |
-| `gen_ai.usage.cache_read.input_tokens` | `chat` spans | Tokens served from cache |
-| `copilot_chat.time_to_first_token` | `chat` spans | Responsiveness (ms) |
-| `copilot_chat.canceled` | any span | User canceled mid-response |
-| `copilot_chat.chat_session_id` | all spans | Groups spans to the same session |
-| `gen_ai.agent.name` | all spans | Agent that handled the request |
-| `copilot_chat.turn.index` | turn spans | Turn number within the session |
+| Attribute                                       | Location             | Meaning                            |
+|-------------------------------------------------|----------------------|------------------------------------|
+| `gen_ai.tool.name`                              | `execute_tool` spans | Which tool was called              |
+| `gen_ai.tool.call.result`                       | `execute_tool` spans | Tool return value                  |
+| `gen_ai.request.model`                          | `chat` spans         | LLM model for this turn            |
+| `gen_ai.usage.input_tokens`                     | `chat` spans         | Tokens consumed                    |
+| `gen_ai.usage.output_tokens`                    | `chat` spans         | Tokens produced                    |
+| `gen_ai.usage.reasoning_tokens`                 | `chat` spans         | Reasoning tokens (thinking models) |
+| `gen_ai.usage.cache_read.input_tokens`          | `chat` spans         | Tokens served from cache           |
+| `copilot_chat.time_to_first_token`              | `chat` spans         | Responsiveness (ms)                |
+| `copilot_chat.canceled`                         | any span             | User canceled mid-response         |
+| `copilot_chat.chat_session_id`                  | all spans            | Groups spans to the same session   |
+| `gen_ai.agent.name`                             | all spans            | Agent that handled the request     |
+| `copilot_chat.turn.index`                       | turn spans           | Turn number within the session     |
 
 ### Automatic Tool Calls
 
@@ -465,14 +469,14 @@ Every `invoke_agent` trace starts with a `manage_todo_list` tool call (checking 
 
 ### Data Formats
 
-| Source | Format | Contains |
-|--------|--------|----------|
-| VS Code file export | JSON-lines (LogRecords) | Events with attributes; no span hierarchy |
-| VS Code OTLP | OTLP gRPC/HTTP (protobuf) | Full trace spans with parent-child relationships |
-| CLI OTLP | OTLP HTTP (protobuf) | Full trace spans (tool calls embedded in agent turns) |
-| Watson output | ATIF JSON | Structured trajectory with steps, tool calls, diffs |
-| Watson raw log | `otel-raw.jsonl` | Pretty-printed OTLP JSON (multi-line, not true JSONL) |
-| VS Code SQLite | `agent-traces.db` | Spans, attributes, events in relational tables |
+| Source              | Format                    | Contains                                              |
+|---------------------|---------------------------|-------------------------------------------------------|
+| VS Code file export | JSON-lines (LogRecords)   | Events with attributes; no span hierarchy             |
+| VS Code OTLP        | OTLP gRPC/HTTP (protobuf) | Full trace spans with parent-child relationships      |
+| CLI OTLP            | OTLP HTTP (protobuf)      | Full trace spans (tool calls embedded in agent turns) |
+| Watson output       | ATIF JSON                 | Structured trajectory with steps, tool calls, diffs   |
+| Watson raw log      | `otel-raw.jsonl`          | Pretty-printed OTLP JSON (multi-line, not true JSONL) |
+| VS Code SQLite      | `agent-traces.db`         | Spans, attributes, events in relational tables        |
 
 ---
 
@@ -482,22 +486,22 @@ Point the agent at these resources when working with OTel trace data:
 
 ### OpenTelemetry Specifications
 
-| Document | URL | Covers |
-|----------|-----|--------|
-| OTel Trace Specification | https://opentelemetry.io/docs/specs/otel/trace/ | Spans, traces, context propagation |
-| OTel Semantic Conventions — GenAI | https://opentelemetry.io/docs/specs/semconv/gen-ai/ | `gen_ai.*` attribute naming for LLM calls |
-| OTLP Protocol Specification | https://opentelemetry.io/docs/specs/otlp/ | Protocol formats (gRPC, HTTP/protobuf, HTTP/JSON) |
-| OTel Exporter Configuration | https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/ | `OTEL_*` environment variables |
+| Document                                                                                | URL                                                                               | Covers                                            |
+|-----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|---------------------------------------------------|
+| OTel Trace Specification                                                                | https://opentelemetry.io/docs/specs/otel/trace/                                   | Spans, traces, context propagation                |
+| OTel Semantic Conventions — GenAI                                                       | https://opentelemetry.io/docs/specs/semconv/gen-ai/                               | `gen_ai.*` attribute naming for LLM calls         |
+| OTLP Protocol Specification                                                             | https://opentelemetry.io/docs/specs/otlp/                                         | Protocol formats (gRPC, HTTP/protobuf, HTTP/JSON) |
+| OTel Exporter Configuration                                                             | https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/ | `OTEL_*` environment variables                    |
 
 ### GenAI Semantic Conventions (Most Relevant)
 
 The GenAI semantic conventions define the attribute names used in Copilot traces:
 
-| Convention | URL |
-|------------|-----|
-| GenAI Spans | https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-spans/ |
+| Convention    | URL                                                                |
+|---------------|--------------------------------------------------------------------|
+| GenAI Spans   | https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-spans/   |
 | GenAI Metrics | https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-metrics/ |
-| GenAI Events | https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-events/ |
+| GenAI Events  | https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-events/  |
 
 Key attributes from these conventions used in Copilot traces:
 - `gen_ai.system` — e.g., `copilot`
@@ -508,18 +512,18 @@ Key attributes from these conventions used in Copilot traces:
 
 ### Aspire Dashboard
 
-| Document | URL |
-|----------|-----|
-| Aspire Dashboard Overview | https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/overview |
-| Standalone Aspire Dashboard | https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/standalone |
+| Document                    | URL                                                                                 |
+|-----------------------------|-------------------------------------------------------------------------------------|
+| Aspire Dashboard Overview   | https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/overview     |
+| Standalone Aspire Dashboard | https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/dashboard/standalone   |
 
 ### Copilot-Specific
 
-| Document | Location |
-|----------|----------|
-| Watson & Graders docs | `ai-tools/docs/` directory in the ai-tools repo |
-| Evaluation docs | `ai-tools/docs/evaluation/` |
-| ATIF format | Defined by the copilot-watson converter; see ATIF JSON output for schema |
+| Document              | Location                                                                 |
+|-----------------------|--------------------------------------------------------------------------|
+| Watson & Graders docs | `ai-tools/docs/` directory in the ai-tools repo                          |
+| Evaluation docs       | `ai-tools/docs/evaluation/`                                              |
+| ATIF format           | Defined by the copilot-watson converter; see ATIF JSON output for schema |
 
 ---
 
