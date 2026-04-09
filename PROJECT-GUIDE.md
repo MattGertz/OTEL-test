@@ -1,5 +1,7 @@
 # Copilot Telemetry Analysis Toolkit
 
+https://github.com/MattGertz/OTEL-test
+
 This project captures, analyzes, and grades GitHub Copilot Chat sessions using OpenTelemetry (OTel) traces. It supports both **VS Code Copilot Chat** and the **Copilot CLI**, with multiple telemetry backends (Aspire Dashboard, file export, and Watson/ATIF pipeline).
 
 ---
