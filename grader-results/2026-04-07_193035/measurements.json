@@ -1,0 +1,591 @@
+{
+  "timestamp": "2026-04-07T19:30:35.9789659+00:00",
+  "measurerCount": 38,
+  "measurers": [
+    {
+      "measurerName": "async-exception-handling",
+      "measurerKind": "ModelBacked",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 1,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-cache-efficiency",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.5,
+      "results": [
+        {
+          "status": "Completed",
+          "value": 0.8556761253818406,
+          "explanation": "1,622,990/1,896,734 prompt tokens cached (85.6%).",
+          "duration": "00:00:00.0024745"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-cached-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "HigherIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 1622990,
+          "explanation": "1,622,990 cached tokens.",
+          "duration": "00:00:00.0003215"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-input-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 1896734,
+          "explanation": "1,896,734 prompt tokens.",
+          "duration": "00:00:00.0002978"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-output-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 14860,
+          "explanation": "14,860 completion tokens.",
+          "duration": "00:00:00.0004410"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-read-write-ratio",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 0.5,
+          "explanation": "2 reads / 4 writes = 0.50.",
+          "duration": "00:00:00.0013116"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-step-count",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 27,
+          "explanation": "27 agent step(s).",
+          "duration": "00:00:00.0000657"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-tool-call-count",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 27,
+          "explanation": "27 tool call(s).",
+          "duration": "00:00:00.0008049"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-total-cost",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 78,
+          "explanation": "$78.0000 USD.",
+          "duration": "00:00:00.0013266"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-wasted-edits",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 0,
+      "results": [
+        {
+          "status": "Completed",
+          "value": 0,
+          "explanation": "0 wasted edit(s) out of 1 total edit(s).",
+          "duration": "00:00:00.0023879"
+        }
+      ]
+    },
+    {
+      "measurerName": "code-duplication",
+      "measurerKind": "ModelBacked",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.7,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "comment-quality-no-roslyn",
+      "measurerKind": "ModelBacked",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.5,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "comment-quality-with-roslyn",
+      "measurerKind": "ModelBacked",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.5,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "cyclomatic-complexity",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 1,
+      "scaleMax": 100,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 10,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "cyclomatic-complexity",
+      "measurerKind": "ModelBacked",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 1,
+      "scaleMax": 100,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 10,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "empty-catch-blocks",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 0,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "magic-numbers",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 0,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "method-length",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 30,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "msbench-trajectory-cache-efficiency",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.5,
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-cached-input-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-input-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-model-vs-tool-duration",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-output-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-read-write-ratio",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-tool-call-count",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-tool-success-ratio",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.9,
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-turn-count",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "results": []
+    },
+    {
+      "measurerName": "msbench-trajectory-wasted-edits",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 0,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0,
+      "results": []
+    },
+    {
+      "measurerName": "naming-conventions",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 1,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "nesting-depth",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 4,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "parameter-count",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 5,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "performance",
+      "measurerKind": "ModelBacked",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.7,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "public-api-ratio",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 0.5,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "test-to-production-ratio",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.5,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "type-size",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 300,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "usings-sorted",
+      "measurerKind": "Deterministic",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 1,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "usings-sorted",
+      "measurerKind": "ModelBacked",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 1,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    },
+    {
+      "measurerName": "winforms-designer-errors",
+      "measurerKind": "ModelBacked",
+      "inputKind": "File",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 1,
+      "results": [
+        {
+          "status": "Skipped",
+          "explanation": "File does not match patterns: *.cs",
+          "filePath": "C:\\Users\\mattge\\source\\repos\\scratch\\watson-output-vscode\\48de0c87\\48de0c87.atif.json",
+          "duration": "00:00:00"
+        }
+      ]
+    }
+  ]
+}

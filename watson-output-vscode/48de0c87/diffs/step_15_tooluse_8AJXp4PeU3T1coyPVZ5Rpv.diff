@@ -1,0 +1,11 @@
+--- a/C:\Users\mattge\source\repos\azure-sdk-tools\specification\portfolio\Portfolio\main.tsp
++++ b/C:\Users\mattge\source\repos\azure-sdk-tools\specification\portfolio\Portfolio\main.tsp
+@@ -1,8 +1,5 @@
+ /** Request for historical performance of a position. */
+ model PerformanceRequest {
+-  /** Ticker symbol. */
+-  ticker: string;
+-
+   /** Time period for the analysis. */
+   period: TimePeriod;
+ }

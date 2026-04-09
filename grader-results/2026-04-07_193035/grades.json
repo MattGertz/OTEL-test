@@ -1,0 +1,375 @@
+{
+  "timestamp": "2026-04-07T19:30:57.6243348+00:00",
+  "graderCount": 38,
+  "totalDuration": "00:00:00.0094315",
+  "graders": [
+    {
+      "graderName": "async-exception-handling",
+      "graderKind": "ModelBacked",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 1,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "atif-trajectory-cache-efficiency",
+      "graderKind": "Deterministic",
+      "grade": "Pass",
+      "aggregateValue": 0.8556761253818406,
+      "strategy": "average",
+      "threshold": 0.5,
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0024745"
+    },
+    {
+      "graderName": "atif-trajectory-cached-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0003215"
+    },
+    {
+      "graderName": "atif-trajectory-input-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0002978"
+    },
+    {
+      "graderName": "atif-trajectory-output-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0004410"
+    },
+    {
+      "graderName": "atif-trajectory-read-write-ratio",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0013116"
+    },
+    {
+      "graderName": "atif-trajectory-step-count",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0000657"
+    },
+    {
+      "graderName": "atif-trajectory-tool-call-count",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0008049"
+    },
+    {
+      "graderName": "atif-trajectory-total-cost",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0013266"
+    },
+    {
+      "graderName": "atif-trajectory-wasted-edits",
+      "graderKind": "Deterministic",
+      "grade": "Pass",
+      "aggregateValue": 0,
+      "strategy": "average",
+      "threshold": 0,
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0023879"
+    },
+    {
+      "graderName": "code-duplication",
+      "graderKind": "ModelBacked",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0.7,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "comment-quality-no-roslyn",
+      "graderKind": "ModelBacked",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0.5,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "comment-quality-with-roslyn",
+      "graderKind": "ModelBacked",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0.5,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "cyclomatic-complexity",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 10,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "cyclomatic-complexity",
+      "graderKind": "ModelBacked",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 10,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "empty-catch-blocks",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "magic-numbers",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "method-length",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 30,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-cache-efficiency",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0.5,
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-cached-input-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-input-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-model-vs-tool-duration",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-output-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-read-write-ratio",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-tool-call-count",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-tool-success-ratio",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0.9,
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-turn-count",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "msbench-trajectory-wasted-edits",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0,
+      "itemCount": 0,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "naming-conventions",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 1,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "nesting-depth",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 4,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "parameter-count",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 5,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "performance",
+      "graderKind": "ModelBacked",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0.7,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "public-api-ratio",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0.5,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "test-to-production-ratio",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 0.5,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "type-size",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 300,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "usings-sorted",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 1,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "usings-sorted",
+      "graderKind": "ModelBacked",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 1,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    },
+    {
+      "graderName": "winforms-designer-errors",
+      "graderKind": "ModelBacked",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "threshold": 1,
+      "itemCount": 1,
+      "completedCount": 0,
+      "duration": "00:00:00"
+    }
+  ]
+}

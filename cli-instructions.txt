@@ -1,0 +1,25 @@
+Steps to run in a separate PowerShell window (outside VS Code):
+================================================================
+
+STEP 1 - Check CLI version (must be >= 1.0.8):
+
+    copilot version
+
+STEP 2 - Set OTLP environment variables (paste these 4 lines one at a time):
+
+    $env:OTEL_TRACES_EXPORTER = "otlp"
+    $env:OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4318"
+    $env:OTEL_EXPORTER_OTLP_PROTOCOL = "http/protobuf"
+    $env:OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT = "true"
+
+STEP 3 - Launch the interactive CLI:
+
+    copilot
+
+Then give it a TypeSpec prompt and come back when done.
+
+TROUBLESHOOTING - Run these in your CLI terminal to check env vars:
+
+    echo $env:COPILOT_OTEL_FILE_EXPORTER_PATH
+    echo $env:OTEL_TRACES_EXPORTER
+    echo $env:OTEL_EXPORTER_OTLP_ENDPOINT

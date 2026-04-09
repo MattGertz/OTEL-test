@@ -1,0 +1,6 @@
+--- a/c:\Users\mattge\source\repos\scratch\identify_atif.py
++++ b/c:\Users\mattge\source\repos\scratch\identify_atif.py
+@@ -1,2 +1,2 @@
+     path = f'watson-output-vscode/{sid}/{sid}.atif.json'
+-    data = json.load(open(path))
++    data = json.load(open(path, encoding='utf-8'))

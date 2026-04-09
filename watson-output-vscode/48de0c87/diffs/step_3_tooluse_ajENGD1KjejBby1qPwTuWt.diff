@@ -1,0 +1,502 @@
+--- /dev/null
++++ b/C:\Users\mattge\source\repos\azure-sdk-tools\specification\portfolio\Portfolio\main.tsp
+@@ -0,0 +1,499 @@
++import "@typespec/http";
++import "@typespec/rest";
++import "@typespec/versioning";
++import "@azure-tools/typespec-azure-core";
++
++using TypeSpec.Http;
++using TypeSpec.Rest;
++using TypeSpec.Versioning;
++using Azure.Core;
++using Azure.Core.Traits;
++
++@useAuth(OAuth2Auth<[{
++  type: OAuth2FlowType.implicit,
++  authorizationUrl: "https://login.microsoftonline.com/common/oauth2/authorize",
++  scopes: ["https://portfolio.azure.com/.default"],
++}]>)
++@service(#{ title: "Portfolio Management Service" })
++@versioned(Azure.Portfolio.Versions)
++@server("https://portfolio.azure.com", "Portfolio Management Service")
++namespace Azure.Portfolio;
++
++/** API versions for the Portfolio Management Service. */
++enum Versions {
++  /** The 2026-04-01-preview version. */
++  v2026_04_01_preview: "2026-04-01-preview",
++}
++
++// ---------------------------------------------------------------------------
++// Extensible unions
++// ---------------------------------------------------------------------------
++
++/** Type of financial asset. */
++union AssetType {
++  /** Common or preferred stock. */
++  stock: "stock",
++
++  /** Government or corporate bond. */
++  bond: "bond",
++
++  /** Mutual fund. */
++  mutualFund: "mutualFund",
++
++  /** Exchange-traded fund. */
++  etf: "etf",
++
++  /** Allow unknown future values. */
++  string,
++}
++
++/** Direction of a transaction. */
++union TransactionSide {
++  /** Purchase / buy. */
++  buy: "buy",
++
++  /** Sale / sell. */
++  sell: "sell",
++
++  /** Allow unknown future values. */
++  string,
++}
++
++/** Capital-gains holding period classification. */
++union TaxLotClassification {
++  /** Short-term: held one year or less. */
++  shortTerm: "shortTerm",
++
++  /** Long-term: held more than one year. */
++  longTerm: "longTerm",
++
++  /** Allow unknown future values. */
++  string,
++}
++
++/** Standard time period for performance analysis. */
++union TimePeriod {
++  /** One day. */
++  oneDay: "1D",
++
++  /** One week. */
++  oneWeek: "1W",
++
++  /** One month. */
++  oneMonth: "1M",
++
++  /** Three months. */
++  threeMonths: "3M",
++
++  /** Six months. */
++  sixMonths: "6M",
++
++  /** Year to date. */
++  yearToDate: "YTD",
++
++  /** One year. */
++  oneYear: "1Y",
++
++  /** Three years. */
++  threeYears: "3Y",
++
++  /** Five years. */
++  fiveYears: "5Y",
++
++  /** Since inception. */
++  all: "ALL",
++
++  /** Allow unknown future values. */
++  string,
++}
++
++/** Fiscal quarter identifier. */
++union FiscalQuarter {
++  /** First quarter (Jan–Mar). */
++  q1: "Q1",
++
++  /** Second quarter (Apr–Jun). */
++  q2: "Q2",
++
++  /** Third quarter (Jul–Sep). */
++  q3: "Q3",
++
++  /** Fourth quarter (Oct–Dec). */
++  q4: "Q4",
++
++  /** Allow unknown future values. */
++  string,
++}
++
++// ---------------------------------------------------------------------------
++// Transaction resource — records buys and sells
++// ---------------------------------------------------------------------------
++
++/** A financial transaction (buy or sell). */
++@resource("transactions")
++model Transaction {
++  /** Unique transaction identifier. */
++  @key
++  @visibility(Lifecycle.Read, Lifecycle.Create, Lifecycle.Query)
++  id: string;
++
++  /** Ticker symbol (e.g. "AAPL", "VFINX"). */
++  ticker: string;
++
++  /** Asset type for this security. */
++  assetType: AssetType;
++
++  /** Buy or sell. */
++  side: TransactionSide;
++
++  /** Number of shares or units. */
++  @minValue(0.0001)
++  quantity: float64;
++
++  /** Price per share/unit at the time of the transaction (USD). */
++  @minValue(0)
++  pricePerUnit: float64;
++
++  /** Total transaction fees or commissions (USD). */
++  @minValue(0)
++  fees?: float64;
++
++  /** Date the transaction was executed (ISO 8601). */
++  executionDate: utcDateTime;
++
++  /** Optional user-supplied notes. */
++  notes?: string;
++
++  /** Server-assigned creation timestamp. */
++  @visibility(Lifecycle.Read)
++  createdAt?: utcDateTime;
++}
++
++// ---------------------------------------------------------------------------
++// Position — read-only, computed from transactions
++// ---------------------------------------------------------------------------
++
++/** A computed portfolio position for a single security. */
++@resource("positions")
++model Position {
++  /** Ticker symbol (serves as the key for positions). */
++  @key
++  @visibility(Lifecycle.Read, Lifecycle.Query)
++  ticker: string;
++
++  /** Display name of the security. */
++  securityName: string;
++
++  /** Asset type. */
++  assetType: AssetType;
++
++  /** Total shares/units currently held. */
++  totalQuantity: float64;
++
++  /** Weighted-average cost basis per unit (USD). */
++  averageCostBasis: float64;
++
++  /** Total cost basis for the entire position (USD). */
++  totalCostBasis: float64;
++
++  /** Current market price per unit (USD). */
++  currentPrice: float64;
++
++  /** Current total market value (USD). */
++  marketValue: float64;
++
++  /** Unrealized gain or loss (USD). */
++  unrealizedGainLoss: float64;
++
++  /** Unrealized gain/loss as a percentage. */
++  unrealizedGainLossPercent: float64;
++
++  /** Number of units classified as short-term (held ≤ 1 year). */
++  shortTermQuantity: float64;
++
++  /** Number of units classified as long-term (held > 1 year). */
++  longTermQuantity: float64;
++}
++
++// ---------------------------------------------------------------------------
++// Analytical models
++// ---------------------------------------------------------------------------
++
++/** Individual tax lot within a position. */
++model TaxLot {
++  /** Date the lot was acquired. */
++  acquisitionDate: utcDateTime;
++
++  /** Number of units in this lot. */
++  quantity: float64;
++
++  /** Cost basis per unit for this lot (USD). */
++  costBasisPerUnit: float64;
++
++  /** Short-term or long-term classification. */
++  classification: TaxLotClassification;
++
++  /** Current market value of this lot (USD). */
++  marketValue: float64;
++
++  /** Unrealized gain/loss for this lot (USD). */
++  unrealizedGainLoss: float64;
++}
++
++/** Tax-lot breakdown for a position. */
++model TaxLotBreakdown {
++  /** Ticker symbol. */
++  ticker: string;
++
++  /** Individual tax lots. */
++  lots: TaxLot[];
++
++  /** Total short-term quantity. */
++  totalShortTermQuantity: float64;
++
++  /** Total long-term quantity. */
++  totalLongTermQuantity: float64;
++
++  /** Total short-term unrealized gain/loss (USD). */
++  shortTermUnrealizedGainLoss: float64;
++
++  /** Total long-term unrealized gain/loss (USD). */
++  longTermUnrealizedGainLoss: float64;
++}
++
++/** A single data point in a performance time series. */
++model PerformanceDataPoint {
++  /** Date of this data point. */
++  date: utcDateTime;
++
++  /** Closing price on this date (USD). */
++  closingPrice: float64;
++
++  /** Total market value of the position on this date (USD). */
++  marketValue: float64;
++
++  /** Cumulative return as a percentage since the start of the period. */
++  cumulativeReturnPercent: float64;
++}
++
++/** Historical performance of a position. */
++model PerformanceHistory {
++  /** Ticker symbol. */
++  ticker: string;
++
++  /** The time period covered. */
++  period: TimePeriod;
++
++  /** Start of the period. */
++  periodStart: utcDateTime;
++
++  /** End of the period. */
++  periodEnd: utcDateTime;
++
++  /** Total return as a percentage over the period. */
++  totalReturnPercent: float64;
++
++  /** Annualized return if the period is one year or longer. */
++  annualizedReturnPercent?: float64;
++
++  /** Time series data points. */
++  dataPoints: PerformanceDataPoint[];
++}
++
++/** Market valuation for a set of positions. */
++model ValuationResult {
++  /** Timestamp of the valuation. */
++  valuedAt: utcDateTime;
++
++  /** Individual position valuations. */
++  positions: PositionValuation[];
++
++  /** Combined market value of all requested positions (USD). */
++  totalMarketValue: float64;
++
++  /** Combined cost basis (USD). */
++  totalCostBasis: float64;
++
++  /** Combined unrealized gain/loss (USD). */
++  totalUnrealizedGainLoss: float64;
++}
++
++/** Valuation snapshot for a single position. */
++model PositionValuation {
++  /** Ticker symbol. */
++  ticker: string;
++
++  /** Current market value (USD). */
++  marketValue: float64;
++
++  /** Cost basis (USD). */
++  costBasis: float64;
++
++  /** Unrealized gain/loss (USD). */
++  unrealizedGainLoss: float64;
++}
++
++/** A summary of transactions over a time range. */
++model ActivityHistory {
++  /** Start of the reporting period. */
++  periodStart: utcDateTime;
++
++  /** End of the reporting period. */
++  periodEnd: utcDateTime;
++
++  /** Transactions within the period. */
++  transactions: Transaction[];
++
++  /** Total number of transactions in the period. */
++  totalCount: int32;
++
++  /** Total value of purchases in the period (USD). */
++  totalPurchases: float64;
++
++  /** Total value of sales in the period (USD). */
++  totalSales: float64;
++}
++
++// ---------------------------------------------------------------------------
++// Request models for RPC operations
++// ---------------------------------------------------------------------------
++
++/** Request for market valuation of selected positions. */
++model ValuationRequest {
++  /** Ticker symbols to value. If empty, all positions are valued. */
++  tickers?: string[];
++}
++
++/** Request for historical performance of a position. */
++model PerformanceRequest {
++  /** Ticker symbol. */
++  ticker: string;
++
++  /** Time period for the analysis. */
++  period: TimePeriod;
++}
++
++/** Request for tax-lot breakdown. */
++model TaxLotRequest {
++  /** Ticker symbol. */
++  ticker: string;
++}
++
++/** Request for activity history by date range. */
++model ActivityByDateRequest {
++  /** Start date (inclusive). */
++  startDate: utcDateTime;
++
++  /** End date (inclusive). */
++  endDate: utcDateTime;
++
++  /** Filter by ticker symbol. */
++  ticker?: string;
++
++  /** Filter by transaction side. */
++  side?: TransactionSide;
++}
++
++/** Request for activity history by fiscal quarter. */
++model ActivityByQuarterRequest {
++  /** Four-digit year. */
++  @minValue(1900)
++  @maxValue(2100)
++  year: int32;
++
++  /** Fiscal quarter. */
++  quarter: FiscalQuarter;
++
++  /** Filter by ticker symbol. */
++  ticker?: string;
++
++  /** Filter by transaction side. */
++  side?: TransactionSide;
++}
++
++/** Portfolio-level summary. */
++model PortfolioSummary {
++  /** Total market value across all positions (USD). */
++  totalMarketValue: float64;
++
++  /** Total cost basis across all positions (USD). */
++  totalCostBasis: float64;
++
++  /** Total unrealized gain/loss (USD). */
++  totalUnrealizedGainLoss: float64;
++
++  /** Total unrealized gain/loss as a percentage. */
++  totalUnrealizedGainLossPercent: float64;
++
++  /** Number of distinct positions held. */
++  positionCount: int32;
++
++  /** Total short-term quantity across all positions. */
++  totalShortTermQuantity: float64;
++
++  /** Total long-term quantity across all positions. */
++  totalLongTermQuantity: float64;
++}
++
++// ---------------------------------------------------------------------------
++// Operations
++// ---------------------------------------------------------------------------
++
++alias Ops = ResourceOperations<NoConditionalRequests & NoRepeatableRequests & NoClientRequestId>;
++
++/** Transaction management operations. */
++@route("/transactions")
++namespace TransactionOperations {
++  /** Record a new transaction (buy or sell). */
++  op createOrReplace is Ops.ResourceCreateOrReplace<Transaction>;
++
++  /** Get a transaction by its ID. */
++  op get is Ops.ResourceRead<Transaction>;
++
++  /** Remove a transaction record. */
++  op deleteTransaction is Ops.ResourceDelete<Transaction>;
++
++  /** List all transactions with optional paging. */
++  op list is Ops.ResourceList<Transaction>;
++}
++
++/** Position and analytics operations. */
++@route("/positions")
++namespace PositionOperations {
++  /** Get a single position by ticker. */
++  op get is Ops.ResourceRead<Position>;
++
++  /** List all current positions. */
++  op list is Ops.ResourceList<Position>;
++
++  /** Get the tax-lot breakdown (short-term vs. long-term) for a position. */
++  op getTaxLots is Ops.ResourceAction<Position, {}, TaxLotBreakdown>;
++
++  /** Get historical performance for a position over a given time period. */
++  op getPerformance is Ops.ResourceAction<Position, PerformanceRequest, PerformanceHistory>;
++}
++
++/** Portfolio-wide analytical operations. */
++@route("/portfolio")
++namespace PortfolioOperations {
++  /** Get the current market valuation for a subset (or all) of positions. */
++  @route("/valuation")
++  @post
++  op getValuation is RpcOperation<ValuationRequest, ValuationResult>;
++
++  /** Get activity history between two arbitrary dates. */
++  @route("/activity/by-date")
++  @post
++  op getActivityByDate is RpcOperation<ActivityByDateRequest, ActivityHistory>;
++
++  /** Get activity history for a specific fiscal quarter. */
++  @route("/activity/by-quarter")
++  @post
++  op getActivityByQuarter is RpcOperation<ActivityByQuarterRequest, ActivityHistory>;
++
++  /** Get a high-level summary of the entire portfolio. */
++  @route("/summary")
++  @get
++  op getSummary is RpcOperation<{}, PortfolioSummary>;
++}
++

@@ -1,0 +1,3189 @@
+{
+  "schema_version": "ATIF-v1.5",
+  "session_id": "48de0c87-efa0-4274-bce0-263c72e680401775589102475",
+  "agent": {
+    "name": "copilot-chat",
+    "version": "0.43.2026040705",
+    "model_name": "claude-opus-4.6",
+    "tool_definitions": [
+      {
+        "type": "function",
+        "name": "powershell",
+        "description": "Runs a PowerShell command in an interactive PowerShell session.\n* The \"command\" parameter does NOT need to be XML-escaped.\n* You can run Python, Node.js and Go code with `python`, `node` and `go`.\n* Each shellId identifies a persistent session. State is saved across calls.\n* `initial_wait` must be 10-600 seconds. Prefer short waits — you'll be notified when commands complete.\n* If a command hasn't completed within initial_wait, it returns partial output and continues running. Use `read_powershell` for more output or `stop_powershell` to stop it.\n* You can install Python, JavaScript and Go packages with the `pip`, `npm` and `go` commands.\n* Use native PowerShell commands not DOS commands (e.g., use Get-ChildItem rather than dir). DOS commands may not work.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "description": "The PowerShell command and arguments to run."
+            },
+            "description": {
+              "type": "string",
+              "description": "A short human-readable description of what the command does, limited to 100 characters, for example \"List files in the current directory\", \"Install dependencies with npm\" or \"Run RSpec tests\"."
+            },
+            "shellId": {
+              "type": "string",
+              "description": "(Optional) Identifier for the PowerShell session. If provided, the command will run in that session, reusing any environment variables or state. It's recommended to set a meaningful shellId to recognize the session. If not provided, a new session with auto-generated ID will be created. For async mode, the generated shellId is returned and should be used with read_powershell, write_powershell, and stop_powershell."
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "sync",
+                "async"
+              ],
+              "description": "Execution mode: \"sync\" runs synchronously and waits for completion (default), \"async\" runs in the background. You can send input to \"async\" commands using the `write_powershell` tool and read output using the `read_powershell` tool."
+            },
+            "detach": {
+              "type": "boolean",
+              "description": "(Optional) Only valid when mode=\"async\". If true, the process runs as a fully independent background process that persists even after agent shutdown (ALWAYS use for servers, daemons, and any process that must stay alive). If false or omitted, the async process is attached to the session and WILL BE KILLED when session shuts down."
+            },
+            "initial_wait": {
+              "type": "number",
+              "description": "(Optional) Time in seconds to wait for initial output when mode is \"sync\". The command continues running in the background after this time. Default is 30 seconds if not provided."
+            }
+          },
+          "required": [
+            "command",
+            "description"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "write_powershell",
+        "description": "Sends input to the specified command or PowerShell session.\n* This tool can be used to send input to a running PowerShell command or an interactive console app.\n* PowerShell commands are run in an interactive PowerShell session with a TTY device and PowerShell command processor.\n* shellId (required) must match the shellId of the PowerShell session you want to write to.\n* You can send text, {up}, {down}, {left}, {right}, {enter}, and {backspace} as input.\n* Some applications present a list of options to select from. The selection is often denoted using ❯, >, or different formatting.\n* When presented with a list of items, make a selection by sending arrow keys like {up} or {down} to move the selection to your chosen item and then {enter} to select it.\n* The response will contain any output read after \"delay\" seconds. Delay should be appropriate for the task and never less than 10 seconds.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "shellId": {
+              "type": "string",
+              "description": "Indicates which PowerShell session to run the command in. Multiple sessions may be used to run different commands at the same time."
+            },
+            "input": {
+              "type": "string",
+              "description": "The input to send to the command or session."
+            },
+            "delay": {
+              "type": "number",
+              "description": "The amount of time in seconds to wait before reading the output that resulted from the input."
+            }
+          },
+          "required": [
+            "shellId",
+            "delay"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "read_powershell",
+        "description": "Reads output from a PowerShell command.\n* Reads output from the PowerShell session identified by shellId.\n* The shellId MUST be the same one used to invoke the powershell command.\n* You will be automatically notified when background commands complete - use this tool to retrieve the full output after notification.\n* Prefer short delays (5-10s) since you'll be notified on completion. No need to poll with long waits.\n* You can call this tool multiple times while a command is still running; repeated reads may return the accumulated output so far.\n* Though `write_powershell` accepts ANSI control codes, this tool does not include them in the output.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "shellId": {
+              "type": "string",
+              "description": "The ID of the shell session used to invoke the PowerShell command. Look back to the powershell call to find the shellId."
+            },
+            "delay": {
+              "type": "number",
+              "description": "The amount of time in seconds to wait before reading the output."
+            }
+          },
+          "required": [
+            "shellId",
+            "delay"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "stop_powershell",
+        "description": "Stops a running PowerShell command.\n* Stops a running PowerShell command by terminating the entire PowerShell session and process.\n* This tool can be used to stop commands that have not exited on their own.\n* Any environment variables defined will have to be redefined after using this tool if the same session ID is used to run a new command.\n* The shellId must match the shellId used to invoke the powershell command.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "shellId": {
+              "type": "string",
+              "description": "The ID of the PowerShell session used to invoke the powershell command."
+            }
+          },
+          "required": [
+            "shellId"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "list_powershell",
+        "description": "Lists all active PowerShell sessions.\n* Returns information about all currently running PowerShell sessions.\n* Useful for discovering shellIds to use with read_powershell, write_powershell, or stop_powershell.\n* Shows shellId, command, mode, PID, status, and whether there is unread output.",
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      },
+      {
+        "type": "function",
+        "name": "view",
+        "description": "Tool for viewing files and directories.\n* If `path` is an image file, returns the image as base64-encoded data along with its MIME type.\n* If `path` is any other type of file, `view` displays the content with line numbers prefixed to each line in the format `N. ` where N is the line number (e.g., `1. `, `2. `, etc.).\n* If `path` is a directory, `view` lists non-hidden files and directories up to 2 levels deep\n* Path *MUST* be absolute",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Full absolute path to file or directory. File MUST exist to view."
+            },
+            "view_range": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "Optional parameter when `path` points to a file. If none is given, the full file is shown. If provided, the file will be shown in the indicated line number range, e.g. [11, 12] will show lines 11 and 12. Indexing at 1 to start. Setting `[start_line, -1]` shows all lines from `start_line` to the end of the file."
+            },
+            "forceReadLargeFiles": {
+              "type": "boolean",
+              "description": "When true, skips the large file size check and reads the entire file. Default is false. Only use when you specifically need the full file content and are willing to use context tokens."
+            }
+          },
+          "required": [
+            "path"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "create",
+        "description": "Tool for creating new files.\n* Creates a new file with the specified content at the given path\n* Cannot be used if the specified path already exists\n* Parent directories must exist before creating the file\n* Path *MUST* be absolute",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Full absolute path to file to create. File MUST not exist before creating."
+            },
+            "file_text": {
+              "type": "string",
+              "description": "The content of the file to be created."
+            }
+          },
+          "required": [
+            "path",
+            "file_text"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "edit",
+        "description": "Tool for making string replacements in files.\n* Replaces exactly one occurrence of `old_str` with `new_str` in the specified file\n* When called multiple times in a single response, edits are independently made in the order calls are specified\n* The `old_str` parameter must match EXACTLY one or more consecutive lines from the original file\n* If `old_str` is not unique in the file, replacement will not be performed\n* Make sure to include enough context in `old_str` to make it unique\n* Path *MUST* be absolute",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Full absolute path to file to edit. File MUST exist to edit."
+            },
+            "old_str": {
+              "type": "string",
+              "description": "The string in the file to replace. Leading and ending whitespaces from file content should be preserved!"
+            },
+            "new_str": {
+              "type": "string",
+              "description": "The new string to replace old_str with."
+            }
+          },
+          "required": [
+            "path"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "web_fetch",
+        "description": "Fetches a URL from the internet and returns the page as either markdown or raw HTML. Use this to safely retrieve up-to-date information from HTML web pages.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The URL to fetch"
+            },
+            "max_length": {
+              "type": "number",
+              "description": "Maximum number of characters to return (default: 5000, maximum: 20000)"
+            },
+            "start_index": {
+              "type": "number",
+              "description": "Start index for pagination. Use this to continue reading if content was truncated (default: 0)"
+            },
+            "raw": {
+              "type": "boolean",
+              "description": "If true, returns raw HTML. If false, converts to simplified markdown (default: false)"
+            }
+          },
+          "required": [
+            "url"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "report_intent",
+        "description": "Use this tool to update the current intent of the session. This is displayed in the user interface and is important to help the user understand what you're doing.\nRules:\n- Call this tool ONLY when you are also calling other tools. Do not call this tool in isolation.\n- Put this tool call first in your collection of tool calls.\n- Always call it at least once per user message (on your first tool-calling turn after a user message).\n- Don't then re-call it if the reported intent is still applicable\nWhen to update intent (examples):\n- ✅ \"Exploring codebase\" → \"Installing dependencies\" (new phase)\n- ✅ \"Running tests\" → \"Debugging test failures\" (new phase)\n- ✅ \"Creating hook script\" → \"Fixing security issue\" (new phase)\n- ❌ \"Installing Pandas 2.2.3\" → \"Installing Pandas with pip3\" (same goal, different tactic: should just have said \"Installing Pandas\")\n- ❌ \"Running transformation script\" → \"Running with python3\" (same goal, fallback attempt)\nPhrasing guidelines:\n- The intent text must be succinct - 4 words max\n- Keep it high-level - it should summarize a series of steps and focus on the goal\n- Use gerund form\n- Bad examples:\n  - 'I am going to read the codebase and understand it.' (too long and no gerund)\n  - 'Writing test1.js' (too low-level: describe the goal, not the specific file)\n  - 'Updating logic' (too vague: at least add one word to hint at what logic)\n- Good examples:\n  - 'Exploring codebase'\n  - 'Creating parser tests'\n  - 'Fixing homepage CSS'",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "intent": {
+              "type": "string",
+              "description": "A description of what you are currently doing or planning to do."
+            }
+          },
+          "required": [
+            "intent"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "fetch_copilot_cli_documentation",
+        "description": "Fetches documentation about you, the GitHub Copilot CLI, and your capabilities. Use this tool when the user asks how to use you, what you can do, or about specific features of the GitHub Copilot CLI.",
+        "parameters": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "type": "function",
+        "name": "skill",
+        "description": "Execute a skill within the main conversation\n\n<skills_instructions>\nWhen users ask you to perform tasks, check if any of the available skills below can help complete the task more effectively. Skills provide specialized capabilities and domain knowledge.\n\nHow to invoke:\n- Use this tool with the skill name only (no arguments)\n- Examples:\n  - skill: \"pdf\" - invoke the pdf skill\n  - skill: \"xlsx\" - invoke the xlsx skill\n\nImportant:\n- Available skills are listed in <available_skills> messages in the conversation\n- When a skill is relevant, you must invoke this tool IMMEDIATELY as your first action\n- When a skill matches the user's request, this is a BLOCKING REQUIREMENT: invoke the relevant Skill tool BEFORE generating any other response about the task\n- NEVER just announce or mention a skill in your text response without actually calling this tool\n- Only use skills listed in <available_skills> below unless the user explicitly requests a skill by name\n- If the user explicitly asks to invoke a skill by name that is not listed, invoke it anyway\n- Do not invoke a skill that is already running\n- Do not use this tool for built-in CLI commands (like /help, /clear, etc.)\n</skills_instructions>\n\n<available_skills>\n<skill>\n  <name>azure-observability</name>\n  <description>Azure Observability Services including Azure Monitor, Application Insights, Log Analytics, Alerts, and Workbooks. Provides metrics, APM, distributed tracing, KQL queries, and interactive reports.</description>\n  <location>project</location>\n</skill>\n<skill>\n  <name>azure-postgres</name>\n  <description>Create new Azure Database for PostgreSQL Flexible Server instances and configure passwordless authentication with Microsoft Entra ID. Set up developer access, managed identities for apps, group-based permissions, and migrate from password-based to Entra ID authentication. Trigger phrases include &quot;passwordless for postgres&quot;, &quot;entra id postgres&quot;, &quot;azure ad postgres authentication&quot;, &quot;postgres managed identity&quot;, &quot;migrate postgres to passwordless&quot;.</description>\n  <location>project</location>\n</skill>\n<skill>\n  <name>microsoft-foundry</name>\n  <description>Deploy, evaluate, and manage Foundry agents end-to-end: Docker build, ACR push, hosted/prompt agent create, container start, batch eval, prompt optimization, prompt optimizer workflows, agent.yaml, dataset curation from traces. USE FOR: deploy agent to Foundry, hosted agent, create agent, invoke agent, evaluate agent, run batch eval, optimize prompt, improve prompt, prompt optimization, prompt optimizer, improve agent instructions, optimize agent instructions, optimize system prompt, deploy model, Foundry project, RBAC, role assignment, permissions, quota, capacity, region, troubleshoot agent, deployment failure, create dataset from traces, dataset versioning, eval trending, create AI Services, Cognitive Services, create Foundry resource, provision resource, knowledge index, agent monitoring, customize deployment, onboard, availability. DO NOT USE FOR: Azure Functions, App Service, general Azure deploy (use azure-deploy), general Azure prep (use azure-prepare).</description>\n  <location>project</location>\n</skill>\n<skill>\n  <name>agent-customization</name>\n  <description>**WORKFLOW SKILL** — Create, update, review, fix, or debug VS Code agent customization files (.instructions.md, .prompt.md, .agent.md, SKILL.md, copilot-instructions.md, AGENTS.md). USE FOR: saving coding preferences; troubleshooting why instructions/skills/agents are ignored or not invoked; configuring applyTo patterns; defining tool restrictions; creating custom agent modes or specialized workflows; packaging domain knowledge; fixing YAML frontmatter syntax. DO NOT USE FOR: general coding questions (use default agent); runtime debugging or error diagnosis; MCP server configuration (use MCP docs directly); VS Code extension development. INVOKES: file system tools (read/write customization files), ask-questions tool (interview user for requirements), subagents for codebase exploration. FOR SINGLE OPERATIONS: For quick YAML frontmatter fixes or creating a single file from a known pattern, edit the file directly — no skill needed.</description>\n  <location>custom</location>\n</skill>\n<skill>\n  <name>get-search-view-results</name>\n  <description>Get the current search results from the Search view in VS Code</description>\n  <location>custom</location>\n</skill>\n<skill>\n  <name>install-vscode-extension</name>\n  <description>How to install a VS Code extension from an extension ID. Useful when the user wants to add new capabilities to their VS Code environment by installing extensions.</description>\n  <location>custom</location>\n</skill>\n<skill>\n  <name>troubleshoot</name>\n  <description>Investigate unexpected chat agent behavior by analyzing direct debug logs in JSONL files. Use when users ask why something happened, why a request was slow, why tools or subagents were used or skipped, or why instructions/skills/agents did not load.</description>\n  <location>custom</location>\n</skill>\n</available_skills>",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "skill": {
+              "type": "string",
+              "description": "The skill name to invoke. E.g., \"pdf\" or \"code-reviewer\""
+            }
+          },
+          "required": [
+            "skill"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "ask_user",
+        "description": "Ask the user a question and wait for their response.\nUse this tool when you need to ask the user questions during execution. This allows you to:\n1. Gather user preferences or requirements\n2. Clarify ambiguous instructions\n3. Get decisions on implementation choices as you work\n4. Offer choices to the user about what direction to take",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string",
+              "description": "The question to ask the user. Ensure only one question is asked at a time - do not bundle multiple questions together."
+            },
+            "choices": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional list of choices for a multiple choice question. Prefer providing choices when possible."
+            },
+            "allow_freeform": {
+              "type": "boolean",
+              "description": "Whether to allow freeform text input in addition to choices. Defaults to true."
+            }
+          },
+          "required": [
+            "question"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "sql",
+        "description": "Execute SQL queries against the session's SQLite database. Use this for structured data that benefits from querying - task tracking, test cases, batch items, state machines, etc.\n\nThe database is per-session and starts empty. You can create tables as needed for your workflow.\n\nSupports all SQLite SQL: SELECT, INSERT, UPDATE, DELETE, CREATE TABLE, ALTER TABLE, DROP TABLE, etc.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "A 2-5 word summary of what this query does (e.g., 'Insert auth todos', 'Query ready todos')."
+            },
+            "query": {
+              "type": "string",
+              "description": "The SQL query to execute. Supports SELECT, INSERT, UPDATE, DELETE, CREATE TABLE, ALTER TABLE, DROP TABLE, and other SQLite-compatible SQL."
+            }
+          },
+          "required": [
+            "description",
+            "query"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "grep",
+        "description": "Fast and precise code search using ripgrep. Search for patterns in file contents.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "description": "The regular expression pattern to search for in file contents"
+            },
+            "path": {
+              "type": "string",
+              "description": "File or directory to search in. Defaults to current working directory"
+            },
+            "output_mode": {
+              "type": "string",
+              "enum": [
+                "content",
+                "files_with_matches",
+                "count"
+              ],
+              "description": "Output format. Defaults to \"files_with_matches\". \"content\": Shows matching lines (supports context flags and line numbers). \"files_with_matches\": Shows only file paths. \"count\": Shows match counts per file"
+            },
+            "glob": {
+              "type": "string",
+              "description": "Glob pattern to filter files (e.g., \"*.js\", \"*.{ts,tsx}\")"
+            },
+            "type": {
+              "type": "string",
+              "description": "File type filter (e.g., \"js\", \"py\", \"rust\", \"go\", \"java\")"
+            },
+            "-i": {
+              "type": "boolean",
+              "description": "Case insensitive search"
+            },
+            "-A": {
+              "type": "number",
+              "description": "Lines of context after match (requires output_mode: \"content\")"
+            },
+            "-B": {
+              "type": "number",
+              "description": "Lines of context before match (requires output_mode: \"content\")"
+            },
+            "-C": {
+              "type": "number",
+              "description": "Lines of context before and after match (requires output_mode: \"content\")"
+            },
+            "-n": {
+              "type": "boolean",
+              "description": "Show line numbers (requires output_mode: \"content\")"
+            },
+            "head_limit": {
+              "type": "number",
+              "description": "Limit output to first N results"
+            },
+            "multiline": {
+              "type": "boolean",
+              "description": "Enable multiline mode where patterns can span lines. Default: false. Use for cross-line patterns."
+            }
+          },
+          "required": [
+            "pattern"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "glob",
+        "description": "Fast file pattern matching using glob patterns. Find files by name patterns.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "description": "The glob pattern to match files against (e.g., \"**/*.js\", \"src/**/*.ts\", \"*.{ts,tsx}\")"
+            },
+            "path": {
+              "type": "string",
+              "description": "The directory to search in. Defaults to current working directory if not specified. IMPORTANT: Omit this field to use the default directory - DO NOT enter 'undefined' or 'null'"
+            }
+          },
+          "required": [
+            "pattern"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "task",
+        "description": "Custom agent: Launch specialized agents in separate context windows for specific tasks.\n\nThe Task tool launches specialized agents that autonomously handle complex tasks. Each agent type has specific capabilities and tools available to it.\n\nAvailable agent types:\n- **explore**: Fast agent specialized for exploring codebases and answering questions about code. Use this when you need to quickly find files by patterns (eg. \"src/components/**/*.tsx\"), search code for keywords (eg. \"API endpoints\"), or answer questions about the codebase (eg. \"how do API endpoints work?\", \"what does this codebase do?\", \"where is authentication logic?\"). Answers multi-part questions thoroughly. Safe to call in parallel — batch related questions into one call or launch multiple in parallel. (Tools: grep/glob/view/bash/powershell, Haiku model)\n\n- **task**: Agent for executing commands with verbose output (tests, builds, lints, dependency installs). Returns brief summary on success (\"All 247 tests passed\", \"Build succeeded\"), full output on failure (stack traces, compiler errors). Keeps main context clean by minimizing successful output. Use for tasks where you only need to know success/failure status. (Tools: All CLI tools, Haiku model)\n\n- **general-purpose**: Full-capability agent running in a subprocess. Use for complex multi-step tasks requiring the complete toolset and high-quality reasoning. Runs in a separate context window to keep your main conversation clean. (Tools: All CLI tools, Sonnet model)\n\n- **code-review**: Agent for reviewing code changes with extremely high signal-to-noise ratio. Analyzes staged/unstaged changes and branch diffs. Only surfaces issues that genuinely matter - bugs, security vulnerabilities, logic errors. Never comments on style, formatting, or trivial matters. Will NOT modify code. (Tools: All CLI tools for investigation)\n\nUser-provided custom agents:\n\nThese are custom agents configured specifically for your environment. They may have specialized knowledge, tools, or workflows tailored to your project needs.\n\n- **Explore**: Fast read-only codebase exploration and Q&A subagent. Prefer over manually chaining multiple search and file-reading operations to avoid cluttering the main conversation. Safe to call in parallel. Specify thoroughness: quick, medium, or thorough.\n\nWhen NOT to use Task tool:\n- Reading specific file paths you already know - use view tool instead\n- Simple single grep/glob search - use grep/glob tools directly\n- Commands where you need immediate full output in your context - use bash directly\n- File operations on known files - use edit/create tools directly\n\nUsage notes:\n- Task agents execute sequentially (one at a time)\n- Each agent is stateless - provide complete context in your prompt\n- Agent results are returned in a single message\n- Use explore proactively for codebase questions before making changes\n- Use 'model' parameter to override the default model (15 models available)",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "A short (3-5 word) description of the task. This will be displayed as the intent in the UI."
+            },
+            "prompt": {
+              "type": "string",
+              "description": "The task for the agent to perform. Be specific about what you want. Provide complete context to be able to perform the task."
+            },
+            "agent_type": {
+              "type": "string",
+              "enum": [
+                "explore",
+                "task",
+                "general-purpose",
+                "code-review",
+                "Explore"
+              ],
+              "description": "The type of specialized agent to use for this task."
+            },
+            "name": {
+              "type": "string",
+              "description": "A short name for the agent. Used to generate a human-readable agent ID (e.g., \"math-helper\")."
+            },
+            "model": {
+              "type": "string",
+              "description": "Optional model override. Use this to run an agent with a different model than its default.\n\nAvailable models:\n  - 'claude-sonnet-4.6' (Claude Sonnet 4.6) - standard\n  - 'claude-sonnet-4.5' (Claude Sonnet 4.5) - standard\n  - 'claude-haiku-4.5' (Claude Haiku 4.5) - fast/cheap\n  - 'claude-opus-4.6' (Claude Opus 4.6) - premium\n  - 'claude-opus-4.6-1m' (Claude Opus 4.6 (1M context)(Internal only)) - premium\n  - 'claude-opus-4.5' (Claude Opus 4.5) - premium\n  - 'claude-sonnet-4' (Claude Sonnet 4) - standard\n  - 'gpt-5.4' (GPT-5.4) - standard\n  - 'gpt-5.3-codex' (GPT-5.3-Codex) - standard\n  - 'gpt-5.2-codex' (GPT-5.2-Codex) - standard\n  - 'gpt-5.2' (GPT-5.2) - standard\n  - 'gpt-5.1' (GPT-5.1) - standard\n  - 'gpt-5.4-mini' (GPT-5.4 mini) - fast/cheap\n  - 'gpt-5-mini' (GPT-5 mini) - fast/cheap\n  - 'gpt-4.1' (GPT-4.1) - fast/cheap"
+            }
+          },
+          "required": [
+            "name",
+            "prompt",
+            "agent_type",
+            "description"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_abandon_release_plan",
+        "description": "Abandon a release plan by work item ID or release plan ID. Updates the release plan status to 'Abandoned'.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workItemId": {
+              "type": "integer",
+              "default": 0
+            },
+            "releasePlanId": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_analyze_log_file",
+        "description": "Analyzes a log file for errors and issues",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "filePath": {
+              "type": "string"
+            },
+            "fullSearch": {
+              "type": "boolean",
+              "default": false
+            },
+            "customKeywords": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": null
+            },
+            "contextLines": {
+              "type": "integer",
+              "default": -1
+            }
+          },
+          "required": [
+            "filePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_analyze_pipeline",
+        "description": "Analyze what happened in an Azure pipeline build. Investigates pipeline runs, identifies failures, and explains build issues.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "buildId": {
+              "type": "integer"
+            },
+            "query": {
+              "type": "string"
+            },
+            "analyzeWithAgent": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "buildId",
+            "query",
+            "analyzeWithAgent"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_apiview_get_comments",
+        "description": "Get API review comments and feedback from APIView for a package. Retrieves all reviewer comments left on the API review.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "apiViewUrl": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "apiViewUrl"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_check_api_spec_ready_for_sdk",
+        "description": "Checks whether a TypeSpec API spec is ready to generate SDK. Provide a pull request number and path to TypeSpec project json as params.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "typeSpecProjectRoot": {
+              "type": "string"
+            },
+            "pullRequestNumber": {
+              "type": "integer"
+            },
+            "workItemId": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "required": [
+            "typeSpecProjectRoot",
+            "pullRequestNumber"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_check_service_label",
+        "description": "Checks if a service label exists and returns its details",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "serviceLabel": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "serviceLabel"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_cleanup_ai_agents",
+        "description": "Clean up AI agents in an AI foundry project. Leave projectEndpoint empty if not specified",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "projectEndpoint": {
+              "type": "string",
+              "default": null
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_convert_swagger_to_typespec",
+        "description": "Converts an existing Azure service swagger definition to a TypeSpec project. Returns path to the created project.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pathToSwaggerReadme": {
+              "description": "Path to the swagger README file.",
+              "type": "string"
+            },
+            "outputDirectory": {
+              "description": "The output directory for the generated TypeSpec project. This must be an existing empty directory.",
+              "type": "string"
+            },
+            "isAzureResourceManagement": {
+              "description": "Indicates whether the swagger is for an Azure Resource Management (ARM) API. Should be true if the swagger's path contains `resource-manager`.",
+              "type": "boolean"
+            },
+            "fullyCompatible": {
+              "description": "Indicates whether the generated TypeSpec project should be fully compatible with the swagger. It is recommended to set this to `false` so that the generated project leverages TypeSpec built-in libraries with standard patterns and templates.",
+              "type": "boolean"
+            },
+            "isCli": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "pathToSwaggerReadme",
+            "outputDirectory",
+            "isAzureResourceManagement",
+            "fullyCompatible",
+            "isCli"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_create_pull_request",
+        "description": "Create pull request for repository changes. Provide title, description and path to repository root. Creates a pull request for committed changes in the current branch.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "repoPath": {
+              "type": "string"
+            },
+            "targetBranch": {
+              "type": "string",
+              "default": "main"
+            },
+            "draft": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "required": [
+            "title",
+            "description",
+            "repoPath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_create_release_plan",
+        "description": "Create Release Plan for a TypeSpec project, service, product. Service ID and product Id are required if a previous release plan is not found for the TypeSpec project.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "typeSpecProjectPath": {
+              "type": "string"
+            },
+            "targetReleaseMonthYear": {
+              "type": "string"
+            },
+            "specApiVersion": {
+              "type": "string"
+            },
+            "specPullRequestUrl": {
+              "type": "string"
+            },
+            "sdkReleaseType": {
+              "type": "string"
+            },
+            "serviceTreeId": {
+              "type": "string",
+              "default": ""
+            },
+            "productTreeId": {
+              "type": "string",
+              "default": ""
+            },
+            "userEmail": {
+              "type": "string",
+              "default": ""
+            },
+            "isTestReleasePlan": {
+              "type": "boolean",
+              "default": false
+            },
+            "forceCreateReleasePlan": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "typeSpecProjectPath",
+            "targetReleaseMonthYear",
+            "specApiVersion",
+            "specPullRequestUrl",
+            "sdkReleaseType"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_create_service_label",
+        "description": "Creates a pull request to add a new service label",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "link": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "label",
+            "link"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_customized_code_update",
+        "description": "Applies patches to customization files based on build errors, regenerates code if needed (Java), builds, and returns success/failure with build result.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "type": "string"
+            },
+            "tspProjectPath": {
+              "type": "string"
+            },
+            "customizationRequest": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "packagePath",
+            "tspProjectPath",
+            "customizationRequest"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_codeowner_add_label_owner",
+        "description": "Add owner(s) to a label with an optional path in CODEOWNERS work items. Valid ownerType values: service-owner, azsdk-owner, pr-label.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "githubUsers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "ownerType": {
+              "type": "string",
+              "enum": [
+                "ServiceOwner",
+                "AzSdkOwner",
+                "PrLabel"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "default": null
+            },
+            "repo": {
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "githubUsers",
+            "labels",
+            "ownerType"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_codeowner_add_package_label",
+        "description": "Add PR label(s) to a package in CODEOWNERS work items.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "package": {
+              "type": "string"
+            },
+            "repo": {
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "labels",
+            "package"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_codeowner_add_package_owner",
+        "description": "Add source owner(s) to a package in CODEOWNERS work items.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "githubUsers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "package": {
+              "type": "string"
+            },
+            "repo": {
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "githubUsers",
+            "package"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_codeowner_remove_label_owner",
+        "description": "Remove owner(s) from a label with an optional path in CODEOWNERS work items. Valid ownerType values: service-owner, azsdk-owner, pr-label.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "githubUsers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "ownerType": {
+              "type": "string",
+              "enum": [
+                "ServiceOwner",
+                "AzSdkOwner",
+                "PrLabel"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "default": null
+            },
+            "repo": {
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "githubUsers",
+            "labels",
+            "ownerType"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_codeowner_remove_package_label",
+        "description": "Remove PR label(s) from a package in CODEOWNERS work items.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "package": {
+              "type": "string"
+            },
+            "repo": {
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "labels",
+            "package"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_codeowner_remove_package_owner",
+        "description": "Remove source owner(s) from a package in CODEOWNERS work items.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "githubUsers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "package": {
+              "type": "string"
+            },
+            "repo": {
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "githubUsers",
+            "package"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_codeowner_update",
+        "description": "Adds or deletes codeowners for a given service label or path in a repo. When isAdding is false, the inputted users will be removed.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "repo": {
+              "type": "string"
+            },
+            "isMgmtPlane": {
+              "type": "boolean"
+            },
+            "path": {
+              "type": "string",
+              "default": ""
+            },
+            "serviceLabel": {
+              "type": "string",
+              "default": ""
+            },
+            "serviceOwners": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": null
+            },
+            "sourceOwners": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": null
+            },
+            "isAdding": {
+              "type": "boolean",
+              "default": false
+            },
+            "workingBranch": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          "required": [
+            "repo",
+            "isMgmtPlane"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_codeowner_view",
+        "description": "View CODEOWNERS associations for a user, label(s), package, or path. Exactly one axis (githubUser, label, package, or path) must be specified. Multiple labels are treated as AND.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "githubUser": {
+              "type": "string",
+              "default": null
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": null
+            },
+            "package": {
+              "type": "string",
+              "default": null
+            },
+            "path": {
+              "type": "string",
+              "default": null
+            },
+            "repo": {
+              "type": "string",
+              "default": null
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_engsys_validate_codeowners_entry_for_service",
+        "description": "Validates codeowners in a specific repository for a given service or repo path.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "repoName": {
+              "type": "string"
+            },
+            "serviceLabel": {
+              "type": "string",
+              "default": null
+            },
+            "path": {
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "repoName"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_example_agent_fibonacci",
+        "description": "Demonstrates agent computing Nth Fibonacci number via iterative tool calls",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "n": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "n"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_example_ai_service",
+        "description": "Demonstrates AI service integration using Azure OpenAI",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "userPrompt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "userPrompt"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_example_azure_service",
+        "description": "Demonstrates Azure service integration",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "tenantId": {
+              "type": "string",
+              "default": null
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_example_devops_service",
+        "description": "Demonstrates DevOps service integration",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packageName": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "packageName",
+            "language"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_example_error_handling",
+        "description": "Demonstrates error handling patterns in tools",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "scenario": {
+              "type": "string"
+            },
+            "forceFailure": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "scenario"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_example_github_service",
+        "description": "Demonstrates GitHub service integration",
+        "parameters": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_example_powershell_execution",
+        "description": "Demonstrates running a powershell script with a parameter",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "message"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_example_process_execution",
+        "description": "Demonstrates running an external process (sleep) and capturing output",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "time": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "time"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_failed_test_case_data",
+        "description": "Get detailed information (error messages, stack traces, output) for a specific failed test case by title from a TRX file. Use this to debug a particular test failure.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trxFilePath": {
+              "type": "string"
+            },
+            "testCaseTitle": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "trxFilePath",
+            "testCaseTitle"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_failed_test_cases",
+        "description": "Get list of all failed test case titles (names only) from a TRX file. Use this to quickly see which tests failed without details.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trxFilePath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "trxFilePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_failed_test_run_data",
+        "description": "Get complete details for all failed test cases from a TRX file. Returns full data including error messages, stack traces, and output for every failed test. Use this for comprehensive analysis.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trxFilePath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "trxFilePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_github_user_details",
+        "description": "Get GitHub user details and profile information. Find out who a GitHub user is by their username.",
+        "parameters": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_modified_typespec_projects",
+        "description": "This tool returns list of TypeSpec projects modified in current branch",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "repoRootPath": {
+              "type": "string"
+            },
+            "targetBranch": {
+              "type": "string",
+              "default": "main"
+            }
+          },
+          "required": [
+            "repoRootPath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_pipeline_llm_artifacts",
+        "description": "Downloads artifacts intended for LLM analysis from a pipeline run",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "buildId": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "buildId"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_pipeline_status",
+        "description": "Get pipeline status for a given pipeline build ID",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "buildId": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "buildId"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_pull_request",
+        "description": "This tool gets pull request details, status, comments, checks, next action details, links to APIView reviews.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pullRequestNumber": {
+              "type": "integer"
+            },
+            "repoPath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pullRequestNumber",
+            "repoPath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_pull_request_link_for_current_branch",
+        "description": "Get pull request link for current branch in the repo. Provide absolute path to repository root as param. This tool call GetPullRequest to get pull request details.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "repoPath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "repoPath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_release_plan",
+        "description": "Get Release Plan: Get release plan work item details for a given work item id or release plan Id. If work item ID is not provided, finds the active release plan by TypeSpec project path or spec PR URL.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workItem": {
+              "type": "integer",
+              "default": 0
+            },
+            "releasePlanId": {
+              "type": "integer",
+              "default": 0
+            },
+            "specPullRequestUrl": {
+              "type": "string",
+              "default": null
+            },
+            "typeSpecProjectPath": {
+              "type": "string",
+              "default": null
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_release_plan_for_spec_pr",
+        "description": "Get release plan for API spec pull request. This tool should be used only if work item Id is unknown.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pullRequestLink": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pullRequestLink"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_sdk_pull_request_link",
+        "description": "Get SDK pull request link from SDK generation pipeline run or from work item. Build ID of pipeline run is required to query pull request link from SDK generation pipeline. This tool can get SDK pull request details if present in a work item.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "language": {
+              "type": "string"
+            },
+            "workItemId": {
+              "type": "integer"
+            },
+            "buildId": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "required": [
+            "language",
+            "workItemId"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_get_service_details_by_typespec_path",
+        "description": "Get service and service tree product details for a product using TypeSpec project path: Get service tree product details (service tree ID, service ID, package display name, product service tree link).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "typeSpecProjectPath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "typeSpecProjectPath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_hello_world",
+        "description": "Returns your message with success status",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "message"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_hello_world_fail",
+        "description": "Returns an error response for testing failure scenarios",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "message"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_link_namespace_approval_issue",
+        "description": "Link package namespace approval issue to release plan(required only for management plan). This requires GitHub issue URL for the namespace approval request and release plan work item id.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "releasePlanWorkItemId": {
+              "type": "integer"
+            },
+            "namespaceApprovalIssue": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "releasePlanWorkItemId",
+            "namespaceApprovalIssue"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_link_sdk_pull_request_to_release_plan",
+        "description": "Link SDK pull request to release plan work item",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "language": {
+              "type": "string"
+            },
+            "pullRequestUrl": {
+              "type": "string"
+            },
+            "workItemId": {
+              "type": "integer",
+              "default": 0
+            },
+            "releasePlanId": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "required": [
+            "language",
+            "pullRequestUrl"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_build_code",
+        "description": "Build/compile SDK code for a specified project locally.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "description": "Absolute path to the SDK project.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "packagePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_generate_code",
+        "description": "Generate SDK code locally or run code generation for a package from TypeSpec. Creates client library code for Azure services. Runs locally, not via pipeline.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "localSdkRepoPath": {
+              "description": "Absolute path to the local Azure SDK repository. REQUIRED. Example: 'path/to/azure-sdk-for-net'. If not provided, the tool attempts to discover the repo from the current working directory.",
+              "type": "string"
+            },
+            "tspConfigPath": {
+              "description": "Path to the 'tspconfig.yaml' file. Can be a local file path or a remote HTTPS URL. Optional if running inside a local cloned azure-sdk-for-{language} repository, for example, inside 'azure-sdk-for-net' repository.",
+              "type": "string"
+            },
+            "tspLocationPath": {
+              "description": "Path to 'tsp-location.yaml'. Optional. May be left empty if running inside a local cloned 'azure-rest-api-specs' repository.",
+              "type": "string"
+            },
+            "emitterOptions": {
+              "description": "Emitter options in key-value format. Optional. Leave empty for defaults. Example: 'package-version=1.0.0-beta.1'.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "localSdkRepoPath",
+            "tspConfigPath",
+            "tspLocationPath",
+            "emitterOptions"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_generate_samples",
+        "description": "Generates sample code for a specified package based on a prompt describing sample scenarios.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "description": "The absolute path to the package directory.",
+              "type": "string"
+            },
+            "prompt": {
+              "description": "The prompt describing sample scenarios to generate (text or path to .md file).",
+              "type": "string"
+            },
+            "overwrite": {
+              "description": "Whether to overwrite existing sample files.",
+              "type": "boolean",
+              "default": false
+            },
+            "model": {
+              "description": "Optional Azure OpenAI deployment name.",
+              "type": "string",
+              "default": null
+            },
+            "extraContextPaths": {
+              "description": "Optional additional context file/folder paths.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": null
+            }
+          },
+          "required": [
+            "packagePath",
+            "prompt"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_pack",
+        "description": "Create distributable artifacts for the specified SDK package.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "description": "Absolute path to the SDK package directory.",
+              "type": "string"
+            },
+            "outputPath": {
+              "description": "Optional output directory for the generated artifact.",
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "packagePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_run_check",
+        "description": "Run validation checks for SDK packages. Provide package path, check type (All, Changelog, Dependency, Readme, Cspell, Snippets), and whether to fix errors.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "type": "string"
+            },
+            "checkType": {
+              "type": "string",
+              "enum": [
+                "All",
+                "Changelog",
+                "Dependency",
+                "Readme",
+                "Cspell",
+                "Snippets",
+                "Linting",
+                "Format",
+                "CheckAotCompat",
+                "GeneratedCodeChecks",
+                "Samples"
+              ]
+            },
+            "fixCheckErrors": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "packagePath",
+            "checkType"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_run_tests",
+        "description": "Run tests for the specified SDK package. Provide package path.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "packagePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_translate_samples",
+        "description": "Translates sample code files from a source package to a target package in a different programming language. Takes samples from the source package's samples directory, understands the functionality being demonstrated, and generates equivalent idiomatic code for the target language using the target package's APIs. Preserves the sample's intent and structure while adapting authentication patterns, error handling, and async conventions to match the target language's best practices.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "fromPackagePath": {
+              "description": "Path to the source package directory containing samples to translate.",
+              "type": "string"
+            },
+            "toPackagePath": {
+              "description": "Path to the target package directory where translated samples will be written.",
+              "type": "string"
+            },
+            "overwrite": {
+              "description": "Whether to overwrite existing sample files.",
+              "type": "boolean",
+              "default": false
+            },
+            "model": {
+              "description": "Optional Azure OpenAI deployment name.",
+              "type": "string",
+              "default": null
+            },
+            "batchSize": {
+              "description": "Number of samples to process per batch.",
+              "type": "integer",
+              "default": 5
+            }
+          },
+          "required": [
+            "fromPackagePath",
+            "toPackagePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_update_changelog_content",
+        "description": "Updates the changelog content for a specified package.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "description": "The absolute path to the package directory.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "packagePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_update_metadata",
+        "description": "Updates the package metadata content for a specified package.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "description": "The absolute path to the package directory.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "packagePath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_package_update_version",
+        "description": "Update or bump the version number for an SDK package. Sets the package version and release date in project files.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packagePath": {
+              "description": "The absolute path to the package directory.",
+              "type": "string"
+            },
+            "releaseType": {
+              "description": "Specifies whether the next version is 'beta' or 'stable'.",
+              "type": "string"
+            },
+            "version": {
+              "description": "Specifies the next version number.",
+              "type": "string"
+            },
+            "releaseDate": {
+              "description": "The date (YYYY-MM-DD) to write into the changelog.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "packagePath",
+            "releaseType",
+            "version",
+            "releaseDate"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_release_sdk",
+        "description": "Releases the specified SDK package for a language. This includes checking if the package is ready for release and triggering the release pipeline. To ONLY check package release readiness pass checkReady as true.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "packageName": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "branch": {
+              "type": "string",
+              "default": "main"
+            },
+            "checkReady": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "packageName",
+            "language"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_run_generate_sdk",
+        "description": "Generate SDK from a TypeSpec project using pipeline.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "typespecProjectRoot": {
+              "type": "string"
+            },
+            "apiVersion": {
+              "type": "string"
+            },
+            "sdkReleaseType": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "pullRequestNumber": {
+              "type": "integer",
+              "default": 0
+            },
+            "workItemId": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "required": [
+            "typespecProjectRoot",
+            "apiVersion",
+            "sdkReleaseType",
+            "language"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_run_typespec_validation",
+        "description": "Run TypeSpec validation. Provide absolute path to TypeSpec project root as param. This tool runs TypeSpec validation and TypeSpec configuration validation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "typeSpecProjectRootPath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "typeSpecProjectRootPath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_typespec_check_project_in_public_repo",
+        "description": "Check if TypeSpec project is in public spec repo. Provide absolute path to TypeSpec project root as param.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "typeSpecProjectPath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "typeSpecProjectPath"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_typespec_delegate_apiview_feedback",
+        "description": "Address, fix, resolve, or delegate APIView feedback/comments from an APIView URL. Use this tool instead of making code changes directly: it reads the reviewer comments, creates a GitHub issue with the feedback, and assigns GitHub Copilot to determine and implement the required TypeSpec client customizations.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "apiViewUrl": {
+              "type": "string"
+            },
+            "repo": {
+              "type": "string",
+              "default": null
+            },
+            "dryRun": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          "required": [
+            "apiViewUrl"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_typespec_generate_authoring_plan",
+        "description": "Generate solutions or execution plans for TypeSpec‑related tasks, such as defining and updating TypeSpec‑based API specifications for an Azure service.\r\nThis tool applies to all tasks involving **TypeSpec**:\r\n- Writing new TypeSpec definitions: service, api version, resource, models, operations\r\n- Editing or refactoring existing TypeSpec files, editing api version, service, resource, models, operations, or properties.\r\n- Versioning evolution:\r\n  - Make a **preview** API **stable (GA)**.\r\n  - Replace an existing **preview** with a **new preview**.\r\n  - Replace a **preview** with a **stable**\r\n  - Replacing a preview API with a stable API and a new preview API.\r\n  - **Add** a preview or **add** a stable API version.\r\n- Resolving TypeSpec-related issues\r\nPass in a `request` to get an AI-generated response with references.\r\nReturns an answer with supporting references and documentation links\r\n",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "request": {
+              "description": "The request to ask the AI agent",
+              "type": "string"
+            },
+            "additionalInformation": {
+              "description": "Additional information to consider for the TypeSpec project",
+              "type": "string",
+              "default": null
+            },
+            "typeSpecProjectRootPath": {
+              "description": "The root path of the TypeSpec project",
+              "type": "string",
+              "default": null
+            }
+          },
+          "required": [
+            "request"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_typespec_init_project",
+        "description": "Use this tool to initialize a new TypeSpec project. Returns the path to the created project.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "outputDirectory": {
+              "description": "Pass in the output directory where the project should be created. Must be an existing empty directory.",
+              "type": "string"
+            },
+            "template": {
+              "description": "`azure-core` for data-plane services, or `azure-arm` for resource-manager services.",
+              "type": "string"
+            },
+            "serviceNamespace": {
+              "description": "The namespace of the service you are creating. Should be Pascal case. Exclude the 'Microsoft.' prefix for ARM services.",
+              "type": "string"
+            },
+            "isCli": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "outputDirectory",
+            "template",
+            "serviceNamespace",
+            "isCli"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_update_api_spec_pull_request_in_release_plan",
+        "description": "Update TypeSpec pull request URL in a release plan using work item id or release plan id.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "specPullRequestUrl": {
+              "type": "string"
+            },
+            "workItemId": {
+              "type": "integer",
+              "default": 0
+            },
+            "releasePlanId": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "required": [
+            "specPullRequestUrl"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_update_language_exclusion_justification",
+        "description": "Update language exclusion justification in release plan work item. This tool is called to update justification for excluded languages in the release plan. Optionally pass a language name to explicitly request exclusion for a specific language.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "releasePlanWorkItem": {
+              "type": "integer"
+            },
+            "justification": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          "required": [
+            "releasePlanWorkItem",
+            "justification"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_update_release_plan",
+        "description": "Update an existing release plan. Updates spec PR URL, TypeSpec project path, API version, SDK release type, and optionally service/product IDs. Runs TypeSpec metadata emitter to resolve package names and updates SDK details. If work item ID is not provided, finds the active release plan by TypeSpec project path or spec PR URL.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "typeSpecProjectPath": {
+              "type": "string"
+            },
+            "specApiVersion": {
+              "type": "string"
+            },
+            "specPullRequestUrl": {
+              "type": "string"
+            },
+            "sdkReleaseType": {
+              "type": "string",
+              "default": ""
+            },
+            "workItemId": {
+              "type": "integer",
+              "default": 0
+            },
+            "serviceTreeId": {
+              "type": "string",
+              "default": ""
+            },
+            "productTreeId": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          "required": [
+            "typeSpecProjectPath",
+            "specApiVersion",
+            "specPullRequestUrl"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_update_sdk_details_in_release_plan",
+        "description": "Update the SDK details in the release plan work item. This tool is called to update SDK language and package name in the release plan work item. sdkDetails parameter is a JSON of list of SDKInfo and each SDKInfo contains Language and PackageName as properties.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "releasePlanWorkItemId": {
+              "type": "integer"
+            },
+            "sdkDetails": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "releasePlanWorkItemId",
+            "sdkDetails"
+          ]
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_upgrade",
+        "description": "Upgrade the MCP server to the latest version. IMPORTANT: After upgrade completes, the MCP server must be restarted to use the new version.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "targetVersion": {
+              "type": "string",
+              "default": null
+            },
+            "includePrerelease": {
+              "type": "boolean",
+              "default": false
+            },
+            "checkOnly": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "name": "azure-sdk-mcp-azsdk_verify_setup",
+        "description": "Verifies the developer environment for MCP release tool requirements. Accepts a list of supported languages to check requirements for, the packagePath of the repo to check, and an optional list of requirement names to try installing. To auto-install, call with `requirementsToInstall` containing the exact requirement names the user wants to install.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "langs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Unknown",
+                  "C++",
+                  ".NET",
+                  "Java",
+                  "JavaScript",
+                  "Python",
+                  "Go",
+                  "Rust"
+                ]
+              },
+              "default": null
+            },
+            "packagePath": {
+              "type": "string",
+              "default": null
+            },
+            "requirementsToInstall": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": null
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceDocString",
+        "description": "Get the docstring/documentation for a Python symbol. Returns the docstring content for functions, classes, methods, or variables. Use when: you need to understand what a symbol does, check documentation before using a function, explain code behavior to users, or validate symbol purpose. Example: To understand foo_bar function, provide its file URI and symbol name \"foo_bar\".",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "fileUri": {
+              "type": "string",
+              "description": "The uri of the file containing the symbol."
+            },
+            "symbolName": {
+              "type": "string",
+              "description": "The name of the symbol (function, class, method, variable) to get the docstring for. This should be the exact symbol name as it appears in the code."
+            }
+          },
+          "required": [
+            "fileUri",
+            "symbolName"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceDocuments",
+        "description": "Search Pylance documentation for Python language server help, configuration guidance, feature explanations, and troubleshooting. Returns comprehensive answers about Pylance settings, capabilities, and usage. Use when users ask: How to configure Pylance? What features are available? How to fix Pylance issues?",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "search": {
+              "type": "string",
+              "description": "Detailed question in natural language. Think of it as a prompt for an LLM. Do not use keyword search terms."
+            }
+          },
+          "required": [
+            "search"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceFileSyntaxErrors",
+        "description": "Check Python file for syntax errors. Returns detailed error list with line numbers, messages, and error types. Use when: users report syntax problems, validating files before processing, debugging parse errors.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspaceRoot": {
+              "type": "string",
+              "description": "The root directory uri of the workspace."
+            },
+            "fileUri": {
+              "type": "string",
+              "description": "The uri of the file to check for syntax errors. Must be a user file in the workspace."
+            }
+          },
+          "required": [
+            "workspaceRoot",
+            "fileUri"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceImports",
+        "description": "Analyze imports across workspace user files. Returns all top-level module names imported, including resolved and unresolved imports. Use for: finding missing dependencies, understanding project dependencies, analyzing import patterns.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspaceRoot": {
+              "type": "string",
+              "description": "The root directory uri of the workspace."
+            }
+          },
+          "required": [
+            "workspaceRoot"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceInstalledTopLevelModules",
+        "description": "Get available top-level modules from installed Python packages in environment. Shows what can be imported. Use for: checking if packages are installed, verifying import availability, helping users understand available modules.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspaceRoot": {
+              "type": "string",
+              "description": "The root directory uri of the workspace."
+            },
+            "pythonEnvironment": {
+              "type": "string",
+              "description": "The Python environment to use. Must be a value returned by the pylancePythonEnvironments tool. If pythonEnvironment is missing, the python environment of the workspace will be used."
+            }
+          },
+          "required": [
+            "workspaceRoot"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceInvokeRefactoring",
+        "description": "Apply automated code refactoring to Python files. Returns refactored content (does not modify original file) unless mode is \"update\". Use for: extracting functions, organizing imports, improving code structure, applying refactoring patterns.  Optional \"mode\" parameter: \"update\" updates the file, \"edits\" returns a WorkspaceEdit, \"string\" returns updated content as string. If mode is not specified, \"update\" will be used as the default. The \"edits\" mode is helpful for determining if a file needs changes (for example, to remove unused imports or fix import formatting) without making any modifications; if no changes are needed, the result will be either an empty WorkspaceEdit or a message indicating that no text edits were found. Available refactorings: source.unusedImports: - Removes all unused import statements from a Python file. Use when imports are imported but never referenced in the code. Requires fileUri parameter pointing to a Python file with unused imports.\nsource.convertImportFormat: - Converts import statements between absolute and relative formats according to python.analysis.importFormat setting. Use when import format consistency is needed. Requires fileUri parameter pointing to a Python file with imports to convert.\nsource.convertImportStar: - Converts all wildcard imports (from module import *) to explicit imports listing all imported symbols. Use when explicit imports are preferred for better code clarity and IDE support. Requires fileUri parameter pointing to a Python file with wildcard imports.\nsource.convertImportToModule: - Converts `from module import name1, name2` (including wildcard imports) into `import module` and rewrites references to `module.name1`, `module.name2`. Use when you want module-qualified references. Requires fileUri parameter pointing to a Python file with `from ... import ...` statements.\nsource.renameShadowedStdlibImports: - Renames imported user modules that shadow standard library module names (e.g. a local calendar.py). Use to avoid import shadowing bugs. Requires fileUri parameter pointing to the importing Python file.\nsource.addTypeAnnotation: - Adds type annotations to all variables and functions in a Python file that can be inferred from their usage. Use when type hints are needed for better type checking and code clarity. Requires fileUri parameter pointing to a Python file with unannotated variables or functions.\nsource.fixAll.pylance: - Applies all available automatic code fixes from python.analysis.fixAll setting. Use when multiple code issues need to be addressed simultaneously. Requires fileUri parameter pointing to a Python file with fixable issues.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "fileUri": {
+              "type": "string",
+              "description": "The uri of the file to invoke the refactoring."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the refactoring to invoke. This must be one of these [source.unusedImports, source.convertImportFormat, source.convertImportStar, source.convertImportToModule, source.renameShadowedStdlibImports, source.addTypeAnnotation, source.fixAll.pylance]"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "update",
+                "edits",
+                "string"
+              ],
+              "description": "Determines the output mode: \"update\" updates the file directly, \"edits\" returns a WorkspaceEdit, \"string\" returns the updated content as a string. If omitted, \"update\" will be used as the default. The \"edits\" mode is especially useful for checking if any changes are needed (such as unused imports or import formatting issues) without modifying the file, as it will return a WorkspaceEdit only if edits are required."
+            }
+          },
+          "required": [
+            "fileUri",
+            "name"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylancePythonEnvironments",
+        "description": "Get Python environment information for workspace: current active environment and all available environments. Use for: Python environment issues, switching environments, understanding Python setup.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspaceRoot": {
+              "type": "string",
+              "description": "The root directory uri of the workspace."
+            }
+          },
+          "required": [
+            "workspaceRoot"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceRunCodeSnippet",
+        "description": "Execute Python code snippets directly in the workspace environment. PREFERRED over terminal commands for running Python code. This tool automatically uses the correct Python interpreter configured for the workspace, eliminates shell escaping/quoting problems that plague terminal execution, and provides clean, properly formatted output with stdout/stderr correctly interleaved. Use this instead of `python -c \"code\"` or terminal commands when running Python snippets. Ideal for: testing code, running quick scripts, validating Python expressions, checking imports, and any Python execution within the workspace context. No temporary files needed - code runs directly in memory.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspaceRoot": {
+              "type": "string",
+              "description": "The root directory uri of the workspace."
+            },
+            "codeSnippet": {
+              "type": "string",
+              "description": "The code snippet to run."
+            },
+            "workingDirectory": {
+              "type": "string",
+              "description": "The working directory to use for the code snippet. If the code snippet is pulled from a file, this should be the directory for the file. Especially if the snippet has imports."
+            },
+            "timeout": {
+              "type": "number",
+              "minimum": 0,
+              "description": "The timeout for the code snippet execution."
+            }
+          },
+          "required": [
+            "workspaceRoot",
+            "codeSnippet"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceSettings",
+        "description": "Get current Python analysis settings and configuration for a workspace. Returns all \"python.analysis.*\" settings with default vs user-configured indicators. Use for: troubleshooting configuration, checking current settings, diagnosing analysis issues.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspaceRoot": {
+              "type": "string",
+              "description": "The root directory uri of the workspace."
+            }
+          },
+          "required": [
+            "workspaceRoot"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceSyntaxErrors",
+        "description": "Validate Python code snippets for syntax errors without saving to file. Returns syntax error details with line numbers and descriptions. Use for: validating generated code, checking user code snippets, pre-execution validation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "The Python code to check for syntax errors."
+            },
+            "pythonVersion": {
+              "type": "string",
+              "description": "The version of Python to use for the syntax check. Must be a valid Python version string. ex) \"3.10\" or \"3.11.4\"."
+            }
+          },
+          "required": [
+            "code",
+            "pythonVersion"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceUpdatePythonEnvironment",
+        "description": "Switch active Python environment for workspace to different Python installation or virtual environment. Updates settings and ensures subsequent operations use new environment. Use for: changing Python versions, switching to virtual environments, resolving environment issues.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspaceRoot": {
+              "type": "string",
+              "description": "The root directory uri of the workspace."
+            },
+            "pythonEnvironment": {
+              "type": "string",
+              "description": "The Python environment to use. Must be either a value returned by the pylancePythonEnvironments tool or the absolute path to a Python executable."
+            }
+          },
+          "required": [
+            "workspaceRoot",
+            "pythonEnvironment"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceWorkspaceRoots",
+        "description": "Get workspace root directories. Returns workspace root for specific file or all workspace roots if no file provided. Use for: understanding workspace structure, getting paths for other operations.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "fileUri": {
+              "type": "string",
+              "description": "The uri of the file to check its workspace"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      },
+      {
+        "type": "function",
+        "name": "pylance_mcp_server-pylanceWorkspaceUserFiles",
+        "description": "Get list of all user Python files in workspace (excludes library/dependency files). Respects python.analysis.include/exclude settings. Use for: analyzing user code, searching project files, operating on user-created Python files.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workspaceRoot": {
+              "type": "string",
+              "description": "The root directory uri of the workspace."
+            }
+          },
+          "required": [
+            "workspaceRoot"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        }
+      }
+    ],
+    "extra": {
+      "provider_name": "github"
+    }
+  },
+  "steps": [
+    {
+      "step_id": 1,
+      "timestamp": "2026-04-07T19:25:57.9834878+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "tool_calls": [
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_terminal_confirmation",
+          "arguments": {
+            "message": "Create Portfolio directory",
+            "command": "New-Item -ItemType Directory -Force -Path C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio | Out-Null; Write-Output \"Created\"",
+            "isBackground": false
+          }
+        },
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_confirmation",
+          "arguments": {
+            "title": "Allow edits to sensitive files?",
+            "message": "The model wants to edit sensitive files ([](file:///c%3A/Users/mattge/source/repos/azure-sdk-tools/specification/portfolio/Portfolio/package.json)). Do you want to allow this?\n\n```diff:json\n<vscode_codeblock_uri>file:///c%3A/Users/mattge/source/repos/azure-sdk-tools/specification/portfolio/Portfolio/package.json</vscode_codeblock_uri>\n- \n+ {\n+   \"name\": \"portfolio-typespec\",\n+   \"private\": true,\n+   \"dependencies\": {\n+     \"@typespec/http\": \"latest\",\n+     \"@typespec/rest\": \"latest\",\n+     \"@typespec/versioning\": \"latest\",\n+     \"@typespec/compiler\": \"latest\",\n+     \"@azure-tools/typespec-azure-core\": \"latest\",\n+     \"@azure-tools/typespec-autorest\": \"latest\",\n+     \"@azure-tools/typespec-azure-rulesets\": \"latest\",\n+     \"@azure-tools/typespec-python\": \"latest\"\n+   }\n+ }\n+ \n```",
+            "confirmationType": "basic"
+          }
+        },
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_terminal_confirmation",
+          "arguments": {
+            "message": "Install TypeSpec dependencies",
+            "command": "cd C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio; npm install 2>&1",
+            "isBackground": false
+          }
+        },
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_terminal_confirmation",
+          "arguments": {
+            "message": "Compile Portfolio TypeSpec",
+            "command": "cd C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio; npx tsp compile . 2>&1",
+            "isBackground": false
+          }
+        },
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_terminal_confirmation",
+          "arguments": {
+            "message": "Recompile Portfolio TypeSpec",
+            "command": "cd C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio; npx tsp compile . 2>&1",
+            "isBackground": false
+          }
+        },
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_confirmation",
+          "arguments": {
+            "title": "azsdk_package_generate_code",
+            "message": "Server: azure-sdk-mcp\n```json\n{\n  \"emitterOptions\": \"\",\n  \"localSdkRepoPath\": \"C:\\\\Users\\\\mattge\\\\source\\\\repos\\\\azure-sdk-for-python\",\n  \"tspConfigPath\": \"C:\\\\Users\\\\mattge\\\\source\\\\repos\\\\azure-sdk-tools\\\\specification\\\\portfolio\\\\Portfolio\\\\tspconfig.yaml\",\n  \"tspLocationPath\": \"\"\n}\n```",
+            "confirmationType": "basic"
+          }
+        },
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_confirmation",
+          "arguments": {
+            "title": "Read file(s)",
+            "message": "Search in directory: C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations",
+            "confirmationType": "basic"
+          }
+        },
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_terminal_confirmation",
+          "arguments": {
+            "message": "Verify SDK structure",
+            "command": "Get-ChildItem C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio -Recurse -Depth 3 | Select-Object FullName",
+            "isBackground": false
+          }
+        },
+        {
+          "tool_call_id": "",
+          "function_name": "vscode_get_confirmation",
+          "arguments": {
+            "title": "Read file(s)",
+            "message": "Search in directory: C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models",
+            "confirmationType": "basic"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "",
+            "content": "yes"
+          },
+          {
+            "source_call_id": "",
+            "content": "yes"
+          },
+          {
+            "source_call_id": "",
+            "content": "yes"
+          },
+          {
+            "source_call_id": "",
+            "content": "yes"
+          },
+          {
+            "source_call_id": "",
+            "content": "yes"
+          },
+          {
+            "source_call_id": "",
+            "content": "yes"
+          },
+          {
+            "source_call_id": "",
+            "content": "yes"
+          },
+          {
+            "source_call_id": "",
+            "content": "yes"
+          },
+          {
+            "source_call_id": "",
+            "content": "yes"
+          }
+        ]
+      },
+      "metrics": {
+        "extra": {
+          "duration_ms": 443570.4878
+        }
+      }
+    },
+    {
+      "step_id": 2,
+      "timestamp": "2026-04-07T19:18:34.5330000+00:00",
+      "source": "user",
+      "message": "<system_notification>\nShell command \"Install TypeSpec dependencies\" (shellId: 1) has completed successfully. Use read_powershell with shellId \"1\" to retrieve the output.\n</system_notification>"
+    },
+    {
+      "step_id": 3,
+      "timestamp": "2026-04-07T19:25:57.9700702+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "message": "**Portfolio service — done!** Summary:\n\n**TypeSpec**: `specification/portfolio/Portfolio/main.tsp` — zero warnings, zero errors (one fix needed: removed duplicate `ticker` field from `PerformanceRequest` since `ResourceAction` auto-injects the resource key)\n\n**Auth**: OAuth2 implicit flow (Azure AD)\n\n**Three operation groups generated:**\n- **TransactionOperations**: `create_or_replace`, `get`, `delete_transaction`, `list` (paged)\n- **PositionOperations**: `get(ticker)`, `list` (paged), `get_tax_lots(ticker)` → short/long-term breakdown, `get_performance(ticker, period)` → time-series history\n- **PortfolioOperations**: `get_valuation` (subset/all), `get_activity_by_date`, `get_activity_by_quarter`, `get_summary`\n\n**15 models**: Transaction, Position, TaxLot, TaxLotBreakdown, PerformanceHistory, PerformanceDataPoint, ValuationResult, PositionValuation, ActivityHistory, PortfolioSummary, plus 5 enums (AssetType, TransactionSide, TaxLotClassification, TimePeriod, FiscalQuarter)\n\n**Python SDK**: `azure-sdk-for-python/sdk/portfolio/azure-portfolio/` — sync+async clients, generated tests for all 3 operation groups.",
+      "tool_calls": [
+        {
+          "tool_call_id": "tooluse_ByouOjoBz6jLK7v9PvHyVG",
+          "function_name": "report_intent",
+          "arguments": {
+            "intent": "Creating Portfolio TypeSpec service"
+          }
+        },
+        {
+          "tool_call_id": "tooluse_HlZe25VYm6hfcrnm8w8QDn",
+          "function_name": "sql",
+          "arguments": {
+            "description": "Insert portfolio todos",
+            "query": "INSERT INTO todos (id, title, description, status) VALUES\n  ('port-tsp-create', 'Create Portfolio TypeSpec project', 'Init project, write main.tsp for financial portfolio management service', 'in_progress'),\n  ('port-tsp-compile', 'Compile Portfolio to zero warnings', 'Fix any linter warnings until clean compile', 'pending'),\n  ('port-sdk-generate', 'Generate Python SDK', 'Use MCP server to generate Python SDK', 'pending'),\n  ('port-sdk-verify', 'Verify generated SDK', 'Check generated operations and models', 'pending');\nINSERT INTO todo_deps (todo_id, depends_on) VALUES\n  ('port-tsp-compile', 'port-tsp-create'),\n  ('port-sdk-generate', 'port-tsp-compile'),\n  ('port-sdk-verify', 'port-sdk-generate');"
+          }
+        },
+        {
+          "tool_call_id": "tooluse_Qdcwx1KhJXvQJXgnVC1RKi",
+          "function_name": "powershell",
+          "arguments": {
+            "command": "New-Item -ItemType Directory -Force -Path C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio | Out-Null; Write-Output \"Created\"",
+            "description": "Create Portfolio directory",
+            "initial_wait": 10
+          }
+        },
+        {
+          "tool_call_id": "tooluse_OJNl1Mx3r579sAzjn88Rxr",
+          "function_name": "create",
+          "arguments": {
+            "file_text": "parameters:\n  \"service-dir\":\n    default: \"sdk/portfolio\"\nemit:\n  - \"@azure-tools/typespec-autorest\"\n  - \"@azure-tools/typespec-python\"\noptions:\n  \"@azure-tools/typespec-autorest\":\n    emitter-output-dir: \"{project-root}/..\"\n    output-file: \"data-plane/{service-name}/{version-status}/{version}/portfolio.json\"\n  \"@azure-tools/typespec-python\":\n    package-dir: \"azure-portfolio\"\n    namespace: \"azure.portfolio\"\n    generate-test: true\n    generate-sample: true\n    flavor: \"azure\"\nlinter:\n  extends:\n    - \"@azure-tools/typespec-azure-rulesets/data-plane\"\n",
+            "path": "C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\tspconfig.yaml"
+          },
+          "diff_path": "diffs/step_3_tooluse_OJNl1Mx3r579sAzjn88Rxr.diff"
+        },
+        {
+          "tool_call_id": "tooluse_QURoeR81jvVmWhlalvHwla",
+          "function_name": "create",
+          "arguments": {
+            "file_text": "{\n  \"name\": \"portfolio-typespec\",\n  \"private\": true,\n  \"dependencies\": {\n    \"@typespec/http\": \"latest\",\n    \"@typespec/rest\": \"latest\",\n    \"@typespec/versioning\": \"latest\",\n    \"@typespec/compiler\": \"latest\",\n    \"@azure-tools/typespec-azure-core\": \"latest\",\n    \"@azure-tools/typespec-autorest\": \"latest\",\n    \"@azure-tools/typespec-azure-rulesets\": \"latest\",\n    \"@azure-tools/typespec-python\": \"latest\"\n  }\n}\n",
+            "path": "C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\package.json"
+          },
+          "diff_path": "diffs/step_3_tooluse_QURoeR81jvVmWhlalvHwla.diff"
+        },
+        {
+          "tool_call_id": "tooluse_ajENGD1KjejBby1qPwTuWt",
+          "function_name": "create",
+          "arguments": {
+            "file_text": "import \"@typespec/http\";\nimport \"@typespec/rest\";\nimport \"@typespec/versioning\";\nimport \"@azure-tools/typespec-azure-core\";\n\nusing TypeSpec.Http;\nusing TypeSpec.Rest;\nusing TypeSpec.Versioning;\nusing Azure.Core;\nusing Azure.Core.Traits;\n\n@useAuth(OAuth2Auth<[{\n  type: OAuth2FlowType.implicit,\n  authorizationUrl: \"https://login.microsoftonline.com/common/oauth2/authorize\",\n  scopes: [\"https://portfolio.azure.com/.default\"],\n}]>)\n@service(#{ title: \"Portfolio Management Service\" })\n@versioned(Azure.Portfolio.Versions)\n@server(\"https://portfolio.azure.com\", \"Portfolio Management Service\")\nnamespace Azure.Portfolio;\n\n/** API versions for the Portfolio Management Service. */\nenum Versions {\n  /** The 2026-04-01-preview version. */\n  v2026_04_01_preview: \"2026-04-01-preview\",\n}\n\n// ---------------------------------------------------------------------------\n// Extensible unions\n// ---------------------------------------------------------------------------\n\n/** Type of financial asset. */\nunion AssetType {\n  /** Common or preferred stock. */\n  stock: \"stock\",\n\n  /** Government or corporate bond. */\n  bond: \"bond\",\n\n  /** Mutual fund. */\n  mutualFund: \"mutualFund\",\n\n  /** Exchange-traded fund. */\n  etf: \"etf\",\n\n  /** Allow unknown future values. */\n  string,\n}\n\n/** Direction of a transaction. */\nunion TransactionSide {\n  /** Purchase / buy. */\n  buy: \"buy\",\n\n  /** Sale / sell. */\n  sell: \"sell\",\n\n  /** Allow unknown future values. */\n  string,\n}\n\n/** Capital-gains holding period classification. */\nunion TaxLotClassification {\n  /** Short-term: held one year or less. */\n  shortTerm: \"shortTerm\",\n\n  /** Long-term: held more than one year. */\n  longTerm: \"longTerm\",\n\n  /** Allow unknown future values. */\n  string,\n}\n\n/** Standard time period for performance analysis. */\nunion TimePeriod {\n  /** One day. */\n  oneDay: \"1D\",\n\n  /** One week. */\n  oneWeek: \"1W\",\n\n  /** One month. */\n  oneMonth: \"1M\",\n\n  /** Three months. */\n  threeMonths: \"3M\",\n\n  /** Six months. */\n  sixMonths: \"6M\",\n\n  /** Year to date. */\n  yearToDate: \"YTD\",\n\n  /** One year. */\n  oneYear: \"1Y\",\n\n  /** Three years. */\n  threeYears: \"3Y\",\n\n  /** Five years. */\n  fiveYears: \"5Y\",\n\n  /** Since inception. */\n  all: \"ALL\",\n\n  /** Allow unknown future values. */\n  string,\n}\n\n/** Fiscal quarter identifier. */\nunion FiscalQuarter {\n  /** First quarter (Jan–Mar). */\n  q1: \"Q1\",\n\n  /** Second quarter (Apr–Jun). */\n  q2: \"Q2\",\n\n  /** Third quarter (Jul–Sep). */\n  q3: \"Q3\",\n\n  /** Fourth quarter (Oct–Dec). */\n  q4: \"Q4\",\n\n  /** Allow unknown future values. */\n  string,\n}\n\n// ---------------------------------------------------------------------------\n// Transaction resource — records buys and sells\n// ---------------------------------------------------------------------------\n\n/** A financial transaction (buy or sell). */\n@resource(\"transactions\")\nmodel Transaction {\n  /** Unique transaction identifier. */\n  @key\n  @visibility(Lifecycle.Read, Lifecycle.Create, Lifecycle.Query)\n  id: string;\n\n  /** Ticker symbol (e.g. \"AAPL\", \"VFINX\"). */\n  ticker: string;\n\n  /** Asset type for this security. */\n  assetType: AssetType;\n\n  /** Buy or sell. */\n  side: TransactionSide;\n\n  /** Number of shares or units. */\n  @minValue(0.0001)\n  quantity: float64;\n\n  /** Price per share/unit at the time of the transaction (USD). */\n  @minValue(0)\n  pricePerUnit: float64;\n\n  /** Total transaction fees or commissions (USD). */\n  @minValue(0)\n  fees?: float64;\n\n  /** Date the transaction was executed (ISO 8601). */\n  executionDate: utcDateTime;\n\n  /** Optional user-supplied notes. */\n  notes?: string;\n\n  /** Server-assigned creation timestamp. */\n  @visibility(Lifecycle.Read)\n  createdAt?: utcDateTime;\n}\n\n// ---------------------------------------------------------------------------\n// Position — read-only, computed from transactions\n// ---------------------------------------------------------------------------\n\n/** A computed portfolio position for a single security. */\n@resource(\"positions\")\nmodel Position {\n  /** Ticker symbol (serves as the key for positions). */\n  @key\n  @visibility(Lifecycle.Read, Lifecycle.Query)\n  ticker: string;\n\n  /** Display name of the security. */\n  securityName: string;\n\n  /** Asset type. */\n  assetType: AssetType;\n\n  /** Total shares/units currently held. */\n  totalQuantity: float64;\n\n  /** Weighted-average cost basis per unit (USD). */\n  averageCostBasis: float64;\n\n  /** Total cost basis for the entire position (USD). */\n  totalCostBasis: float64;\n\n  /** Current market price per unit (USD). */\n  currentPrice: float64;\n\n  /** Current total market value (USD). */\n  marketValue: float64;\n\n  /** Unrealized gain or loss (USD). */\n  unrealizedGainLoss: float64;\n\n  /** Unrealized gain/loss as a percentage. */\n  unrealizedGainLossPercent: float64;\n\n  /** Number of units classified as short-term (held ≤ 1 year). */\n  shortTermQuantity: float64;\n\n  /** Number of units classified as long-term (held > 1 year). */\n  longTermQuantity: float64;\n}\n\n// ---------------------------------------------------------------------------\n// Analytical models\n// ---------------------------------------------------------------------------\n\n/** Individual tax lot within a position. */\nmodel TaxLot {\n  /** Date the lot was acquired. */\n  acquisitionDate: utcDateTime;\n\n  /** Number of units in this lot. */\n  quantity: float64;\n\n  /** Cost basis per unit for this lot (USD). */\n  costBasisPerUnit: float64;\n\n  /** Short-term or long-term classification. */\n  classification: TaxLotClassification;\n\n  /** Current market value of this lot (USD). */\n  marketValue: float64;\n\n  /** Unrealized gain/loss for this lot (USD). */\n  unrealizedGainLoss: float64;\n}\n\n/** Tax-lot breakdown for a position. */\nmodel TaxLotBreakdown {\n  /** Ticker symbol. */\n  ticker: string;\n\n  /** Individual tax lots. */\n  lots: TaxLot[];\n\n  /** Total short-term quantity. */\n  totalShortTermQuantity: float64;\n\n  /** Total long-term quantity. */\n  totalLongTermQuantity: float64;\n\n  /** Total short-term unrealized gain/loss (USD). */\n  shortTermUnrealizedGainLoss: float64;\n\n  /** Total long-term unrealized gain/loss (USD). */\n  longTermUnrealizedGainLoss: float64;\n}\n\n/** A single data point in a performance time series. */\nmodel PerformanceDataPoint {\n  /** Date of this data point. */\n  date: utcDateTime;\n\n  /** Closing price on this date (USD). */\n  closingPrice: float64;\n\n  /** Total market value of the position on this date (USD). */\n  marketValue: float64;\n\n  /** Cumulative return as a percentage since the start of the period. */\n  cumulativeReturnPercent: float64;\n}\n\n/** Historical performance of a position. */\nmodel PerformanceHistory {\n  /** Ticker symbol. */\n  ticker: string;\n\n  /** The time period covered. */\n  period: TimePeriod;\n\n  /** Start of the period. */\n  periodStart: utcDateTime;\n\n  /** End of the period. */\n  periodEnd: utcDateTime;\n\n  /** Total return as a percentage over the period. */\n  totalReturnPercent: float64;\n\n  /** Annualized return if the period is one year or longer. */\n  annualizedReturnPercent?: float64;\n\n  /** Time series data points. */\n  dataPoints: PerformanceDataPoint[];\n}\n\n/** Market valuation for a set of positions. */\nmodel ValuationResult {\n  /** Timestamp of the valuation. */\n  valuedAt: utcDateTime;\n\n  /** Individual position valuations. */\n  positions: PositionValuation[];\n\n  /** Combined market value of all requested positions (USD). */\n  totalMarketValue: float64;\n\n  /** Combined cost basis (USD). */\n  totalCostBasis: float64;\n\n  /** Combined unrealized gain/loss (USD). */\n  totalUnrealizedGainLoss: float64;\n}\n\n/** Valuation snapshot for a single position. */\nmodel PositionValuation {\n  /** Ticker symbol. */\n  ticker: string;\n\n  /** Current market value (USD). */\n  marketValue: float64;\n\n  /** Cost basis (USD). */\n  costBasis: float64;\n\n  /** Unrealized gain/loss (USD). */\n  unrealizedGainLoss: float64;\n}\n\n/** A summary of transactions over a time range. */\nmodel ActivityHistory {\n  /** Start of the reporting period. */\n  periodStart: utcDateTime;\n\n  /** End of the reporting period. */\n  periodEnd: utcDateTime;\n\n  /** Transactions within the period. */\n  transactions: Transaction[];\n\n  /** Total number of transactions in the period. */\n  totalCount: int32;\n\n  /** Total value of purchases in the period (USD). */\n  totalPurchases: float64;\n\n  /** Total value of sales in the period (USD). */\n  totalSales: float64;\n}\n\n// ---------------------------------------------------------------------------\n// Request models for RPC operations\n// ---------------------------------------------------------------------------\n\n/** Request for market valuation of selected positions. */\nmodel ValuationRequest {\n  /** Ticker symbols to value. If empty, all positions are valued. */\n  tickers?: string[];\n}\n\n/** Request for historical performance of a position. */\nmodel PerformanceRequest {\n  /** Ticker symbol. */\n  ticker: string;\n\n  /** Time period for the analysis. */\n  period: TimePeriod;\n}\n\n/** Request for tax-lot breakdown. */\nmodel TaxLotRequest {\n  /** Ticker symbol. */\n  ticker: string;\n}\n\n/** Request for activity history by date range. */\nmodel ActivityByDateRequest {\n  /** Start date (inclusive). */\n  startDate: utcDateTime;\n\n  /** End date (inclusive). */\n  endDate: utcDateTime;\n\n  /** Filter by ticker symbol. */\n  ticker?: string;\n\n  /** Filter by transaction side. */\n  side?: TransactionSide;\n}\n\n/** Request for activity history by fiscal quarter. */\nmodel ActivityByQuarterRequest {\n  /** Four-digit year. */\n  @minValue(1900)\n  @maxValue(2100)\n  year: int32;\n\n  /** Fiscal quarter. */\n  quarter: FiscalQuarter;\n\n  /** Filter by ticker symbol. */\n  ticker?: string;\n\n  /** Filter by transaction side. */\n  side?: TransactionSide;\n}\n\n/** Portfolio-level summary. */\nmodel PortfolioSummary {\n  /** Total market value across all positions (USD). */\n  totalMarketValue: float64;\n\n  /** Total cost basis across all positions (USD). */\n  totalCostBasis: float64;\n\n  /** Total unrealized gain/loss (USD). */\n  totalUnrealizedGainLoss: float64;\n\n  /** Total unrealized gain/loss as a percentage. */\n  totalUnrealizedGainLossPercent: float64;\n\n  /** Number of distinct positions held. */\n  positionCount: int32;\n\n  /** Total short-term quantity across all positions. */\n  totalShortTermQuantity: float64;\n\n  /** Total long-term quantity across all positions. */\n  totalLongTermQuantity: float64;\n}\n\n// ---------------------------------------------------------------------------\n// Operations\n// ---------------------------------------------------------------------------\n\nalias Ops = ResourceOperations<NoConditionalRequests & NoRepeatableRequests & NoClientRequestId>;\n\n/** Transaction management operations. */\n@route(\"/transactions\")\nnamespace TransactionOperations {\n  /** Record a new transaction (buy or sell). */\n  op createOrReplace is Ops.ResourceCreateOrReplace<Transaction>;\n\n  /** Get a transaction by its ID. */\n  op get is Ops.ResourceRead<Transaction>;\n\n  /** Remove a transaction record. */\n  op deleteTransaction is Ops.ResourceDelete<Transaction>;\n\n  /** List all transactions with optional paging. */\n  op list is Ops.ResourceList<Transaction>;\n}\n\n/** Position and analytics operations. */\n@route(\"/positions\")\nnamespace PositionOperations {\n  /** Get a single position by ticker. */\n  op get is Ops.ResourceRead<Position>;\n\n  /** List all current positions. */\n  op list is Ops.ResourceList<Position>;\n\n  /** Get the tax-lot breakdown (short-term vs. long-term) for a position. */\n  op getTaxLots is Ops.ResourceAction<Position, {}, TaxLotBreakdown>;\n\n  /** Get historical performance for a position over a given time period. */\n  op getPerformance is Ops.ResourceAction<Position, PerformanceRequest, PerformanceHistory>;\n}\n\n/** Portfolio-wide analytical operations. */\n@route(\"/portfolio\")\nnamespace PortfolioOperations {\n  /** Get the current market valuation for a subset (or all) of positions. */\n  @route(\"/valuation\")\n  @post\n  op getValuation is RpcOperation<ValuationRequest, ValuationResult>;\n\n  /** Get activity history between two arbitrary dates. */\n  @route(\"/activity/by-date\")\n  @post\n  op getActivityByDate is RpcOperation<ActivityByDateRequest, ActivityHistory>;\n\n  /** Get activity history for a specific fiscal quarter. */\n  @route(\"/activity/by-quarter\")\n  @post\n  op getActivityByQuarter is RpcOperation<ActivityByQuarterRequest, ActivityHistory>;\n\n  /** Get a high-level summary of the entire portfolio. */\n  @route(\"/summary\")\n  @get\n  op getSummary is RpcOperation<{}, PortfolioSummary>;\n}\n",
+            "path": "C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\main.tsp"
+          },
+          "diff_path": "diffs/step_3_tooluse_ajENGD1KjejBby1qPwTuWt.diff"
+        },
+        {
+          "tool_call_id": "tooluse_ENiaCPbuwnqZB3tk8KypDf",
+          "function_name": "powershell",
+          "arguments": {
+            "command": "cd C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio; npm install 2>&1",
+            "description": "Install TypeSpec dependencies",
+            "initial_wait": 60
+          }
+        },
+        {
+          "tool_call_id": "tooluse_Vg6Djr53rykCshVoYh0owI",
+          "function_name": "read_powershell",
+          "arguments": {
+            "delay": 60,
+            "shellId": "1"
+          }
+        },
+        {
+          "tool_call_id": "tooluse_vptFcBdKum0bATTzEuLhsv",
+          "function_name": "powershell",
+          "arguments": {
+            "command": "cd C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio; npx tsp compile . 2>&1",
+            "description": "Compile Portfolio TypeSpec",
+            "initial_wait": 30
+          }
+        },
+        {
+          "tool_call_id": "tooluse_8AJXp4PeU3T1coyPVZ5Rpv",
+          "function_name": "edit",
+          "arguments": {
+            "new_str": "/** Request for historical performance of a position. */\nmodel PerformanceRequest {\n  /** Time period for the analysis. */\n  period: TimePeriod;\n}",
+            "old_str": "/** Request for historical performance of a position. */\nmodel PerformanceRequest {\n  /** Ticker symbol. */\n  ticker: string;\n\n  /** Time period for the analysis. */\n  period: TimePeriod;\n}",
+            "path": "C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\main.tsp"
+          },
+          "diff_path": "diffs/step_3_tooluse_8AJXp4PeU3T1coyPVZ5Rpv.diff"
+        },
+        {
+          "tool_call_id": "tooluse_tHpFNqoQBEn6esbSVyZE7r",
+          "function_name": "powershell",
+          "arguments": {
+            "command": "cd C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio; npx tsp compile . 2>&1",
+            "description": "Recompile Portfolio TypeSpec",
+            "initial_wait": 30
+          }
+        },
+        {
+          "tool_call_id": "tooluse_mG5CDJ8qVMfIen8sMLB36C",
+          "function_name": "report_intent",
+          "arguments": {
+            "intent": "Generating Portfolio Python SDK"
+          }
+        },
+        {
+          "tool_call_id": "tooluse_CHulDxNusSkLrwIZUPyNaA",
+          "function_name": "sql",
+          "arguments": {
+            "description": "Update portfolio todos",
+            "query": "UPDATE todos SET status = 'done' WHERE id IN ('port-tsp-create', 'port-tsp-compile');\nUPDATE todos SET status = 'in_progress' WHERE id = 'port-sdk-generate';"
+          }
+        },
+        {
+          "tool_call_id": "tooluse_6oYq4TCIHAd45pWIiHCS5m",
+          "function_name": "azure-sdk-mcp-azsdk_package_generate_code",
+          "arguments": {
+            "emitterOptions": "",
+            "localSdkRepoPath": "C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python",
+            "tspConfigPath": "C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\tspconfig.yaml",
+            "tspLocationPath": ""
+          }
+        },
+        {
+          "tool_call_id": "tooluse_gmeG0fdrF4dxgI4Vo4DTTl",
+          "function_name": "grep",
+          "arguments": {
+            "-n": true,
+            "output_mode": "content",
+            "path": "C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations",
+            "pattern": "def (create|get|delete|list|get_tax|get_performance|get_valuation|get_activity|get_summary)"
+          }
+        },
+        {
+          "tool_call_id": "tooluse_Oyt0BQ3Wmikdoph6pPllvJ",
+          "function_name": "powershell",
+          "arguments": {
+            "command": "Get-ChildItem C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio -Recurse -Depth 3 | Select-Object FullName",
+            "description": "Verify SDK structure",
+            "initial_wait": 10
+          }
+        },
+        {
+          "tool_call_id": "tooluse_UhrBVouT1L5cE7yFSQ4vOP",
+          "function_name": "grep",
+          "arguments": {
+            "-n": true,
+            "output_mode": "content",
+            "path": "C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models",
+            "pattern": "^class "
+          }
+        },
+        {
+          "tool_call_id": "tooluse_XXwFuOdH4NyKL66rFmZdon",
+          "function_name": "sql",
+          "arguments": {
+            "description": "Mark portfolio done",
+            "query": "UPDATE todos SET status = 'done' WHERE id IN ('port-sdk-generate', 'port-sdk-verify');"
+          }
+        }
+      ],
+      "observation": {
+        "results": [
+          {
+            "source_call_id": "tooluse_ByouOjoBz6jLK7v9PvHyVG",
+            "content": "Intent logged"
+          },
+          {
+            "source_call_id": "tooluse_HlZe25VYm6hfcrnm8w8QDn",
+            "content": "Executed 2 statement(s):\n\n1. INSERT\n   4 row(s) inserted. Last inserted row ID: 16.\n\n2. INSERT\n   3 row(s) inserted. Last inserted row ID: 12."
+          },
+          {
+            "source_call_id": "tooluse_Qdcwx1KhJXvQJXgnVC1RKi",
+            "content": "Created\n<exited with exit code 0>"
+          },
+          {
+            "source_call_id": "tooluse_OJNl1Mx3r579sAzjn88Rxr",
+            "content": "Created file C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\tspconfig.yaml with 578 characters"
+          },
+          {
+            "source_call_id": "tooluse_QURoeR81jvVmWhlalvHwla",
+            "content": "Created file C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\package.json with 428 characters"
+          },
+          {
+            "source_call_id": "tooluse_ajENGD1KjejBby1qPwTuWt",
+            "content": "Created file C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\main.tsp with 13012 characters"
+          },
+          {
+            "source_call_id": "tooluse_ENiaCPbuwnqZB3tk8KypDf",
+            "content": "pm install\u0007\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-:\\WINDOWS\\system32\\cmd.exe \u0007\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\\n<command with shellId: 1 is still running after 60 seconds. The command is still running. Check the output above - if it looks like the command is waiting for input, use write_powershell to provide it. Otherwise, use read_powershell to continue waiting for output, or stop_powershell to stop it.>"
+          },
+          {
+            "source_call_id": "tooluse_Vg6Djr53rykCshVoYh0owI",
+            "content": "pm install\u0007\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-:\\WINDOWS\\system32\\cmd.exe \u0007\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\|/-\\\nadded 150 packages, and audited 151 packages in 1m\n\n25 packages are looking for funding\n  run `npm fund` for details\n\nfound 0 vulnerabilities\n:\\Program Files\\PowerShell\\7\\pwsh.exe\u0007\n<command with id: 1 exited with exit code 0>"
+          },
+          {
+            "source_call_id": "tooluse_vptFcBdKum0bATTzEuLhsv",
+            "content": "pm exec tsp compile .\u0007:\\WINDOWS\\system32\\cmd.exe \u0007TypeSpec compiler v1.10.0\\ Compiling...| Compiling.../ Compiling...- Compiling...\\ Compiling...| Compiling.../ Compiling...- Compiling...× Compiling\nDiagnostics were reported during compilation:node_modules/@azure-tools/typespec-azure-core/lib/foundations.tsp:355:16 - error intersect-duplicate-property: Intersection contains duplicate property definitions for ticker\n> 355 | > is Operation<Foundations.ItemKeysOf<Resource> & Parameters, Response, Traits, ErrorResponse>;\n      |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Found 1 error.\\\n<exited with exit code 1>"
+          },
+          {
+            "source_call_id": "tooluse_8AJXp4PeU3T1coyPVZ5Rpv",
+            "content": "File C:\\Users\\mattge\\source\\repos\\azure-sdk-tools\\specification\\portfolio\\Portfolio\\main.tsp updated with changes."
+          },
+          {
+            "source_call_id": "tooluse_tHpFNqoQBEn6esbSVyZE7r",
+            "content": "pm exec tsp compile .\u0007:\\WINDOWS\\system32\\cmd.exe \u0007TypeSpec compiler v1.10.0\\ Compiling...| Compiling.../ Compiling...- Compiling...\\ Compiling...| Compiling.../ Compiling...- Compiling...\\ Compiling...✔ Compiling\n\\ Running @azure-tools/typespec-autorest...✔ @azure-tools/typespec-autorest 183ms ../\n\\ Running @azure-tools/typespec-python...✔ @azure-tools/typespec-python 5951ms tsp-output/@azure-tools/typespec-python/Compilation completed successfully.\n<exited with exit code 0>"
+          },
+          {
+            "source_call_id": "tooluse_mG5CDJ8qVMfIen8sMLB36C",
+            "content": "Intent logged"
+          },
+          {
+            "source_call_id": "tooluse_CHulDxNusSkLrwIZUPyNaA",
+            "content": "Executed 2 statement(s):\n\n1. UPDATE\n   2 row(s) updated.\n\n2. UPDATE\n   1 row(s) updated."
+          },
+          {
+            "source_call_id": "tooluse_6oYq4TCIHAd45pWIiHCS5m",
+            "content": "{\"message\":\"SDK generation completed successfully using tspconfig.yaml.\",\"result\":\"succeeded\",\"language\":\"Python\",\"package_name\":\"\",\"version\":\"\",\"package_type\":\"Unknown\",\"typespec_project\":\"specification/portfolio/Portfolio\",\"sdk_repo\":\"azure-sdk-for-python\",\"next_steps\":[\"If the SDK is not Python, build the code\"],\"operation_status\":\"Succeeded\"}"
+          },
+          {
+            "source_call_id": "tooluse_gmeG0fdrF4dxgI4Vo4DTTl",
+            "content": "C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:345:    def create_or_replace(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:363:    def create_or_replace(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:381:    def create_or_replace(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:399:    def create_or_replace(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:475:    def get(self, id: str, **kwargs: Any) -> _models.Transaction:\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:536:    def delete_transaction(self, id: str, **kwargs: Any) -> None:  # pylint: disable=inconsistent-return-statements\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:584:    def list(self, **kwargs: Any) -> ItemPaged[\"_models.Transaction\"]:\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:651:        def get_next(next_link=None):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:687:    def get(self, ticker: str, **kwargs: Any) -> _models.Position:\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:748:    def list(self, **kwargs: Any) -> ItemPaged[\"_models.Position\"]:\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:815:        def get_next(next_link=None):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:833:    def get_tax_lots(self, ticker: str, **kwargs: Any) -> _models.TaxLotBreakdown:\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:894:    def get_performance(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:918:    def get_performance(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:936:    def get_performance(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:954:    def get_performance(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1060:    def get_valuation(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1077:    def get_valuation(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1093:    def get_valuation(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1109:    def get_valuation(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1187:    def get_activity_by_date(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1217:    def get_activity_by_date(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1233:    def get_activity_by_date(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1249:    def get_activity_by_date(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1344:    def get_activity_by_quarter(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1374:    def get_activity_by_quarter(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1390:    def get_activity_by_quarter(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1406:    def get_activity_by_quarter(\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\\_operations.py:1501:    def get_summary(self, **kwargs: Any) -> _models.PortfolioSummary:"
+          },
+          {
+            "source_call_id": "tooluse_Oyt0BQ3Wmikdoph6pPllvJ",
+            "content": "FullName\n--------\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\_metadata.json\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\apiview-properties.json\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\CHANGELOG.md\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\dev_requirements.txt\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\LICENSE\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\MANIFEST.in\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\pyproject.toml\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\README.md\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\tsp-location.yaml\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\__init__.py\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\_utils\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\aio\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\__init__.py\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\_client.py\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\_configuration.py\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\_patch.py\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\_version.py\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\py.typed\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\conftest.py\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\test_portfolio_portfol…\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\test_portfolio_portfol…\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\test_portfolio_positio…\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\test_portfolio_positio…\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\test_portfolio_transac…\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\test_portfolio_transac…\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\testpreparer_async.py\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\generated_tests\\testpreparer.py\n<exited with exit code 0>"
+          },
+          {
+            "source_call_id": "tooluse_UhrBVouT1L5cE7yFSQ4vOP",
+            "content": "C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_enums.py:13:class AssetType(str, Enum, metaclass=CaseInsensitiveEnumMeta):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_enums.py:26:class FiscalQuarter(str, Enum, metaclass=CaseInsensitiveEnumMeta):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_enums.py:39:class TaxLotClassification(str, Enum, metaclass=CaseInsensitiveEnumMeta):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_enums.py:48:class TimePeriod(str, Enum, metaclass=CaseInsensitiveEnumMeta):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_enums.py:73:class TransactionSide(str, Enum, metaclass=CaseInsensitiveEnumMeta):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:19:class ActivityHistory(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:78:class PerformanceDataPoint(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:124:class PerformanceHistory(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:194:class PortfolioSummary(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:264:class Position(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:362:class PositionValuation(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:407:class TaxLot(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:470:class TaxLotBreakdown(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:531:class Transaction(_Model):\r\nC:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models\\_models.py:609:class ValuationResult(_Model):"
+          },
+          {
+            "source_call_id": "tooluse_XXwFuOdH4NyKL66rFmZdon",
+            "content": "2 row(s) updated."
+          }
+        ]
+      },
+      "metrics": {
+        "prompt_tokens": 948367,
+        "completion_tokens": 7430,
+        "cached_tokens": 811495,
+        "cost_usd": 39,
+        "extra": {
+          "duration_ms": 443437.0702
+        }
+      },
+      "extra": {
+        "response_id": "381a348b-ec3d-44ae-973b-bee4a1177d0a"
+      }
+    },
+    {
+      "step_id": 4,
+      "timestamp": "2026-04-07T19:18:35.2030000+00:00",
+      "source": "user",
+      "message": "OK, one more test.  The Azure SDK MCP has started, so no need to check that, but be sure to use it.  For this service, we're going to maintain a user's financial assets (stocks, bonds, funds).  The user can record sales and purchases.  We need to be able to get information about current assets, such as how many (for a given position) are VAR-S vs. VAR-L, what the current market value is for any subset of all positions, and what the historical performance for any position is over the usual time increments.  We should be able to get histories of user activities between abitrary dates or per quarter.  And, of course, the user will need to authenticate.  And so on -- all of the usual stuff. Give it a shot -- feel free to ask clarifying questions, but otherwise I think you can figure this all out.  End result is a Python SDK as usual.\n <reminder>\nIMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task\n</reminder>\n<context>\n\n</context>\n<userRequest>\nOK, one more test.  The Azure SDK MCP has started, so no need to check that, but be sure to use it.  For this service, we're going to maintain a user's financial assets (stocks, bonds, funds).  The user can record sales and purchases.  We need to be able to get information about current assets, such as how many (for a given position) are VAR-S vs. VAR-L, what the current market value is for any subset of all positions, and what the historical performance for any position is over the usual time increments.  We should be able to get histories of user activities between abitrary dates or per quarter.  And, of course, the user will need to authenticate.  And so on -- all of the usual stuff. Give it a shot -- feel free to ask clarifying questions, but otherwise I think you can figure this all out.  End result is a Python SDK as usual.\n</userRequest>\n"
+    },
+    {
+      "step_id": 5,
+      "timestamp": "2026-04-07T19:20:20.1059047+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 122074,
+        "completion_tokens": 1354,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 104902.9047
+        }
+      },
+      "extra": {
+        "response_id": "d050de84-6962-4fcd-992a-6296e696c14e"
+      }
+    },
+    {
+      "step_id": 6,
+      "timestamp": "2026-04-07T19:20:17.5350974+00:00",
+      "source": "agent",
+      "metrics": {
+        "extra": {
+          "duration_ms": 71689.0974
+        }
+      }
+    },
+    {
+      "step_id": 7,
+      "timestamp": "2026-04-07T19:20:40.2765949+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 62806,
+        "completion_tokens": 504,
+        "cached_tokens": 60753,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 20170.5949
+        }
+      },
+      "extra": {
+        "response_id": "66b29c13-9135-490d-a095-5496ced289cd"
+      }
+    },
+    {
+      "step_id": 8,
+      "timestamp": "2026-04-07T19:20:35.0511753+00:00",
+      "source": "agent",
+      "metrics": {
+        "extra": {
+          "duration_ms": 162.1753
+        }
+      }
+    },
+    {
+      "step_id": 9,
+      "timestamp": "2026-04-07T19:20:40.2736685+00:00",
+      "source": "agent",
+      "reasoning_content": "Edited tspconfig.yaml",
+      "metrics": {
+        "extra": {
+          "duration_ms": 5383.6685
+        }
+      }
+    },
+    {
+      "step_id": 10,
+      "timestamp": "2026-04-07T19:21:31.8942584+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 63437,
+        "completion_tokens": 3688,
+        "cached_tokens": 62805,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 51617.2584
+        }
+      },
+      "extra": {
+        "response_id": "2b99a6be-af62-4256-a43b-ad0312f0887c"
+      }
+    },
+    {
+      "step_id": 11,
+      "timestamp": "2026-04-07T19:21:31.8899562+00:00",
+      "source": "agent",
+      "metrics": {
+        "extra": {
+          "duration_ms": 10.9562
+        }
+      }
+    },
+    {
+      "step_id": 12,
+      "timestamp": "2026-04-07T19:22:42.8728190+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 67172,
+        "completion_tokens": 121,
+        "cached_tokens": 63372,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 70978.819
+        }
+      },
+      "extra": {
+        "response_id": "57e66fd8-50bb-4f3f-9855-5130f8ac0078"
+      }
+    },
+    {
+      "step_id": 13,
+      "timestamp": "2026-04-07T19:21:41.8646634+00:00",
+      "source": "agent",
+      "metrics": {
+        "extra": {
+          "duration_ms": 4824.6634
+        }
+      }
+    },
+    {
+      "step_id": 14,
+      "timestamp": "2026-04-07T19:22:58.3800371+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "reasoning_content": "Install TypeSpec dependencies, Read Terminal",
+      "metrics": {
+        "prompt_tokens": 67705,
+        "completion_tokens": 73,
+        "cached_tokens": 67171,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 15507.0371
+        }
+      },
+      "extra": {
+        "response_id": "139b15ff-eec3-43dc-a1e2-38dbe622daab"
+      }
+    },
+    {
+      "step_id": 15,
+      "timestamp": "2026-04-07T19:22:58.3800000+00:00",
+      "source": "user",
+      "message": "<system_notification>\nShell command \"Install TypeSpec dependencies\" (shellId: 1) has completed successfully. Use read_powershell with shellId \"1\" to retrieve the output.\n</system_notification>"
+    },
+    {
+      "step_id": 16,
+      "timestamp": "2026-04-07T19:23:28.4467164+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 68298,
+        "completion_tokens": 127,
+        "cached_tokens": 67704,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 30066.7164
+        }
+      },
+      "extra": {
+        "response_id": "5936b0a4-e855-4ab4-b3c9-b08c348ac824"
+      }
+    },
+    {
+      "step_id": 17,
+      "timestamp": "2026-04-07T19:23:22.4255095+00:00",
+      "source": "agent",
+      "metrics": {
+        "extra": {
+          "duration_ms": 19026.5095
+        }
+      }
+    },
+    {
+      "step_id": 18,
+      "timestamp": "2026-04-07T19:23:35.1838161+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 68615,
+        "completion_tokens": 247,
+        "cached_tokens": 68244,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 6736.8161
+        }
+      },
+      "extra": {
+        "response_id": "87f14070-e30a-4ee7-aeb3-cf949a588e5a"
+      }
+    },
+    {
+      "step_id": 19,
+      "timestamp": "2026-04-07T19:23:35.1805522+00:00",
+      "source": "agent",
+      "metrics": {
+        "extra": {
+          "duration_ms": 8.5522
+        }
+      }
+    },
+    {
+      "step_id": 20,
+      "timestamp": "2026-04-07T19:24:00.1477508+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 68905,
+        "completion_tokens": 128,
+        "cached_tokens": 68614,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 24963.7508
+        }
+      },
+      "extra": {
+        "response_id": "0d055330-0579-4866-ab33-e509cbde9a1a"
+      }
+    },
+    {
+      "step_id": 21,
+      "timestamp": "2026-04-07T19:23:47.0869484+00:00",
+      "source": "agent",
+      "metrics": {
+        "extra": {
+          "duration_ms": 5761.9484
+        }
+      }
+    },
+    {
+      "step_id": 22,
+      "timestamp": "2026-04-07T19:25:21.7464161+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 69209,
+        "completion_tokens": 328,
+        "cached_tokens": 68904,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 81598.4161
+        }
+      },
+      "extra": {
+        "response_id": "20fe9019-4729-4412-82ee-2d2fa9ba6a93"
+      }
+    },
+    {
+      "step_id": 23,
+      "timestamp": "2026-04-07T19:24:09.1199069+00:00",
+      "source": "agent",
+      "reasoning_content": "Update portfolio todos",
+      "metrics": {
+        "extra": {
+          "duration_ms": 15.9069
+        }
+      }
+    },
+    {
+      "step_id": 24,
+      "timestamp": "2026-04-07T19:25:35.9309268+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 69758,
+        "completion_tokens": 283,
+        "cached_tokens": 69208,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 14184.9268
+        }
+      },
+      "extra": {
+        "response_id": "97823b34-82b5-487f-9c1b-438704477125"
+      }
+    },
+    {
+      "step_id": 25,
+      "timestamp": "2026-04-07T19:25:34.5845395+00:00",
+      "source": "agent",
+      "metrics": {
+        "extra": {
+          "duration_ms": 4559.5395
+        }
+      }
+    },
+    {
+      "step_id": 26,
+      "timestamp": "2026-04-07T19:25:30.0494298+00:00",
+      "source": "agent",
+      "reasoning_content": "Verify SDK structure, Search for files matching `def (create|get|delete|list|get_tax|get_performance|get_valuation|get_activity|get_summary)` in `C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\operations`",
+      "metrics": {
+        "extra": {
+          "duration_ms": 23.4298
+        }
+      }
+    },
+    {
+      "step_id": 27,
+      "timestamp": "2026-04-07T19:25:41.2908602+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 72783,
+        "completion_tokens": 137,
+        "cached_tokens": 69757,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 5359.8602
+        }
+      },
+      "extra": {
+        "response_id": "88d4c06f-5ce0-4a45-a066-ce0d90cc0ef9"
+      }
+    },
+    {
+      "step_id": 28,
+      "timestamp": "2026-04-07T19:25:41.2006481+00:00",
+      "source": "agent",
+      "reasoning_content": "Search for files matching `^class ` in `C:\\Users\\mattge\\source\\repos\\azure-sdk-for-python\\sdk\\portfolio\\azure-portfolio\\azure\\portfolio\\models`",
+      "metrics": {
+        "extra": {
+          "duration_ms": 15.6481
+        }
+      }
+    },
+    {
+      "step_id": 29,
+      "timestamp": "2026-04-07T19:25:46.4302575+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "metrics": {
+        "prompt_tokens": 73745,
+        "completion_tokens": 96,
+        "cached_tokens": 71219,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 5139.2575
+        }
+      },
+      "extra": {
+        "response_id": "562383ac-4ebb-4b39-90b0-81043e34bfba"
+      }
+    },
+    {
+      "step_id": 30,
+      "timestamp": "2026-04-07T19:25:57.9677969+00:00",
+      "source": "agent",
+      "model_name": "claude-opus-4.6",
+      "message": "**Portfolio service — done!** Summary:\n\n**TypeSpec**: `specification/portfolio/Portfolio/main.tsp` — zero warnings, zero errors (one fix needed: removed duplicate `ticker` field from `PerformanceRequest` since `ResourceAction` auto-injects the resource key)\n\n**Auth**: OAuth2 implicit flow (Azure AD)\n\n**Three operation groups generated:**\n- **TransactionOperations**: `create_or_replace`, `get`, `delete_transaction`, `list` (paged)\n- **PositionOperations**: `get(ticker)`, `list` (paged), `get_tax_lots(ticker)` → short/long-term breakdown, `get_performance(ticker, period)` → time-series history\n- **PortfolioOperations**: `get_valuation` (subset/all), `get_activity_by_date`, `get_activity_by_quarter`, `get_summary`\n\n**15 models**: Transaction, Position, TaxLot, TaxLotBreakdown, PerformanceHistory, PerformanceDataPoint, ValuationResult, PositionValuation, ActivityHistory, PortfolioSummary, plus 5 enums (AssetType, TransactionSide, TaxLotClassification, TimePeriod, FiscalQuarter)\n\n**Python SDK**: `azure-sdk-for-python/sdk/portfolio/azure-portfolio/` — sync+async clients, generated tests for all 3 operation groups.",
+      "metrics": {
+        "prompt_tokens": 73860,
+        "completion_tokens": 344,
+        "cached_tokens": 73744,
+        "cost_usd": 3,
+        "extra": {
+          "duration_ms": 11537.7969
+        }
+      },
+      "extra": {
+        "response_id": "381a348b-ec3d-44ae-973b-bee4a1177d0a"
+      }
+    }
+  ],
+  "final_metrics": {
+    "total_steps": 30,
+    "total_prompt_tokens": 1896734,
+    "total_completion_tokens": 14860,
+    "total_cached_tokens": 1622990,
+    "total_tool_calls": 27,
+    "total_cost_usd": 78
+  }
+}

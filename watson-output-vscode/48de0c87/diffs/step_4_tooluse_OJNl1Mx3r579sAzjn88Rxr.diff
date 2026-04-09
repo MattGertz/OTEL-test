@@ -1,0 +1,23 @@
+--- /dev/null
++++ b/C:\Users\mattge\source\repos\azure-sdk-tools\specification\portfolio\Portfolio\tspconfig.yaml
+@@ -0,0 +1,20 @@
++parameters:
++  "service-dir":
++    default: "sdk/portfolio"
++emit:
++  - "@azure-tools/typespec-autorest"
++  - "@azure-tools/typespec-python"
++options:
++  "@azure-tools/typespec-autorest":
++    emitter-output-dir: "{project-root}/.."
++    output-file: "data-plane/{service-name}/{version-status}/{version}/portfolio.json"
++  "@azure-tools/typespec-python":
++    package-dir: "azure-portfolio"
++    namespace: "azure.portfolio"
++    generate-test: true
++    generate-sample: true
++    flavor: "azure"
++linter:
++  extends:
++    - "@azure-tools/typespec-azure-rulesets/data-plane"
++

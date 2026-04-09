@@ -1,0 +1,153 @@
+{
+  "timestamp": "2026-03-25T18:05:12.7154075+00:00",
+  "measurerCount": 9,
+  "measurers": [
+    {
+      "measurerName": "atif-trajectory-cache-efficiency",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleMax": 1,
+      "scaleDirection": "HigherIsBetter",
+      "threshold": 0.5,
+      "results": [
+        {
+          "status": "Completed",
+          "value": 0.9467703853647151,
+          "explanation": "5,894,173/6,225,557 prompt tokens cached (94.7%).",
+          "duration": "00:00:00.0064933"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-cached-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "HigherIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 5894173,
+          "explanation": "5,894,173 cached tokens.",
+          "duration": "00:00:00.0003027"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-input-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 6225557,
+          "explanation": "6,225,557 prompt tokens.",
+          "duration": "00:00:00.0003186"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-output-tokens",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 24709,
+          "explanation": "24,709 completion tokens.",
+          "duration": "00:00:00.0003647"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-read-write-ratio",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 0,
+          "explanation": "0 reads, no writes recorded.",
+          "duration": "00:00:00.0004980"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-step-count",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 62,
+          "explanation": "62 agent step(s).",
+          "duration": "00:00:00.0000531"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-tool-call-count",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 0,
+          "explanation": "0 tool call(s).",
+          "duration": "00:00:00.0007552"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-total-cost",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "results": [
+        {
+          "status": "Completed",
+          "value": 360,
+          "explanation": "$360.0000 USD.",
+          "duration": "00:00:00.0043674"
+        }
+      ]
+    },
+    {
+      "measurerName": "atif-trajectory-wasted-edits",
+      "measurerKind": "Deterministic",
+      "inputKind": "AtifTrajectory",
+      "itemCount": 1,
+      "scaleMin": 0,
+      "scaleDirection": "LowerIsBetter",
+      "threshold": 0,
+      "results": [
+        {
+          "status": "Completed",
+          "value": 0,
+          "explanation": "0 wasted edit(s) out of 0 total edit(s).",
+          "duration": "00:00:00.0003712"
+        }
+      ]
+    }
+  ]
+}

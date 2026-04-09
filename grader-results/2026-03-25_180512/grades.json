@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-03-25T18:06:07.2389785+00:00",
+  "graderCount": 9,
+  "totalDuration": "00:00:00.0135242",
+  "graders": [
+    {
+      "graderName": "atif-trajectory-cache-efficiency",
+      "graderKind": "Deterministic",
+      "grade": "Pass",
+      "aggregateValue": 0.9467703853647151,
+      "strategy": "average",
+      "threshold": 0.5,
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0064933"
+    },
+    {
+      "graderName": "atif-trajectory-cached-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0003027"
+    },
+    {
+      "graderName": "atif-trajectory-input-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0003186"
+    },
+    {
+      "graderName": "atif-trajectory-output-tokens",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0003647"
+    },
+    {
+      "graderName": "atif-trajectory-read-write-ratio",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0004980"
+    },
+    {
+      "graderName": "atif-trajectory-step-count",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0000531"
+    },
+    {
+      "graderName": "atif-trajectory-tool-call-count",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0007552"
+    },
+    {
+      "graderName": "atif-trajectory-total-cost",
+      "graderKind": "Deterministic",
+      "grade": "NotEvaluated",
+      "strategy": "average",
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0043674"
+    },
+    {
+      "graderName": "atif-trajectory-wasted-edits",
+      "graderKind": "Deterministic",
+      "grade": "Pass",
+      "aggregateValue": 0,
+      "strategy": "average",
+      "threshold": 0,
+      "itemCount": 1,
+      "completedCount": 1,
+      "duration": "00:00:00.0003712"
+    }
+  ]
+}
